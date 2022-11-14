@@ -48,7 +48,7 @@
 
 ### Server Setup
 
-Clone this repository with git and open terminal. Open terminal and cd into the repository.
+Clone this repository with git, open terminal, and cd into the repository.
 
 Install node modules :
 
@@ -70,11 +70,11 @@ ATLASLOGIN=a
 STATUS=b
 ```
 
-These will fill in the variables throughout the server, on run. Note that x and y can be any password you desire, z is the PORT your server will run on.
+These will fill in the variables throughout the server code. Note that **_x_** and **_y_** can be any password you desire, **_z_** is the PORT your server will run on. The react client will run on PORT **_3000_**, so use something other than that. Like **_5000_**.
 
-To find the URL for a just visit your DB of choice and find the connection url that includes your DB password and username.
+To find the URL for **_a_** just visit your DB of choice and find the connection url that includes your DB password and username.
 
-Status will either be 'developer' or 'production'. Settings for both are round in server.js.
+Replace **_b_** with 'developer' or 'production'. Settings for both are found in server.js.
 
 ### Client Setup
 
@@ -101,13 +101,13 @@ $ npm start
 Client:
 
 ```bash
-#For client
+#In client folder
 $ npm start
 ```
 
 ## Credits
 
-This software uses the following open source packages:
+This software uses the following open source packages. :
 
 - [ReactJS](https://reactjs.org//)
 - [Node.js](https://nodejs.org/)
@@ -129,5 +129,3 @@ MIT
 ---
 
 > GitHub [@underwoodno5](https://github.com/underwoodno5)
-
-> Twitter [@amit_merchant](https://twitter.com/amit_merchant)
