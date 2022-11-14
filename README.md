@@ -4,7 +4,6 @@
 
 <p  align="center">
 <a  href="#core-features">Core Features</a> •
-<a  href="#packages">Packages</a> •
 <a  href="#how-to-use">How To Use</a> •
 <a  href="#credits">Credits</a> •
 <a  href="#license">License</a>
@@ -40,7 +39,6 @@
 ---
 
 <h4  align="center">Requirements.</h4>
-
 
 <p  align="center">
 <a  href="https://git-scm.com">Git</a> •
