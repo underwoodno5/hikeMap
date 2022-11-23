@@ -1,0 +1,109 @@
+@mixin card {
+	box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
+	border-radius: 5px;
+	margin: 10px;
+}
+
+// Animations
+
+@mixin animation-mixin($name, $from, $to) {
+	@keyframes #{$name} {
+		0% {
+			transform: translate3d($from, 0, 0);
+		}
+		100% {
+			transform: translate3d($to, 0, 0);
+		}
+	}
+}
+
+@mixin vertical-animation-mixin($name, $from, $to, $bob) {
+	@keyframes #{$name} {
+		0% {
+			transform: translate3d(0, $from, 0);
+		}
+		80% {
+			transform: translate3d(0, $bob, 0);
+		}
+		100% {
+			transform: translate3d(0, $to, 0);
+		}
+	}
+}
+@mixin opacity-animation-mixin($name, $from, $to) {
+	@keyframes #{$name} {
+		0% {
+			opacity: $from;
+		}
+		100% {
+			opacity: $to;
+		}
+	}
+}
+
+@mixin pulse-animation-mixin($name, $from, $to, $size) {
+	@keyframes #{$name} {
+		0% {
+			box-shadow: 0 0 0 0px $from;
+		}
+		70% {
+			box-shadow: 0 0 0 $size $to;
+		}
+		100% {
+			box-shadow: 0 0 0 $size $to;
+		}
+	}
+}
+
+@mixin center-flex {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	align-content: center;
+}
+
+@include animation-mixin(slide-out, 0, 110%);
+
+.slide-out {
+	animation: slide-out 0.8s ease-out forwards;
+}
+
+//Media-queries
+
+@mixin for-phone-only {
+	@media (max-width: 599px) {
+		@content;
+	}
+}
+
+@mixin for-tablet-portrait {
+	@media (min-width: 600px) {
+		@content;
+	}
+}
+@mixin for-tablet-landscape {
+	@media (min-width: 900px) {
+		@content;
+	}
+}
+@mixin for-desktop {
+	@media (min-width: 64em) {
+		@content;
+	}
+}
+@mixin for-big-desktop {
+	@media (min-width: 1800px) {
+		@content;
+	}
+}
+
+//headings
+
+h1 {
+	@include for-desktop() {
+		font-size: 5rem;
+		font-weight: 300;
+		letter-spacing: 0;
+		line-height: 1;
+	}
+}

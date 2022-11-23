@@ -1,0 +1,20 @@
+@use "../mixins";
+
+.error-box {
+	position: absolute;
+	top: 20vh;
+	left: 10%;
+	width: 80%;
+	height: 80px;
+	display: flex;
+	justify-content: space-around;
+	align-items: center;
+	background-color: var(--warn-color);
+}
+
+@include mixins.vertical-animation-mixin(slide-up, 80px, 0, 0);
+@include mixins.opacity-animation-mixin(fade-in, 0, 1);
+.slide-up {
+	animation: slide-up 0.5s cubic-bezier(0.39, 0.575, 0.565, 1) both,
+		fade-in 0.8s cubic-bezier(0.39, 0.575, 0.565, 1) both;
+}

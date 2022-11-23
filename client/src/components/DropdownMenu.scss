@@ -1,0 +1,32 @@
+.dropdown-menu-container {
+	height: 35px;
+	display: flex;
+	position: absolute;
+	width: 200px;
+	justify-content: flex-end;
+	&:hover {
+		cursor: pointer;
+		menu {
+			max-height: 200px;
+			transition: max-height 0.4s ease-in-out;
+		}
+	}
+	menu {
+		list-style-type: none;
+		overflow: hidden;
+		transition: max-height 0.25s ease-in;
+		position: absolute;
+		top: 19px;
+		right: 0px;
+		max-height: 0px;
+		li {
+			width: 100%;
+			button {
+				width: 100%;
+				text-align: left;
+				padding-left: 20px;
+				padding-right: 20px;
+			}
+		}
+	}
+}

@@ -1,8 +1,9 @@
 .topBar-wrapper {
 	display: flex;
 	width: 100%;
-	height: 40px;
-	background-color: transparent;
+	height: 75px;
+	margin-bottom: 20px;
+	z-index: 10;
 
 	.topBar-box {
 		flex-grow: 1;
@@ -14,6 +15,9 @@
 			font-size: 35px;
 			color: white;
 			font-weight: 800;
+		}
+		img {
+			height: 60px;
 		}
 		&:first-of-type {
 			justify-content: flex-start;

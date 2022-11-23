@@ -16,11 +16,45 @@ exports.Trails = {
 		let graphqlQuery = {
 			query: `query{Trail(name:"${trailName}"){
            name
+		   id
            startLat
            startLong
         }}`,
 		};
-		let res = await response(graphqlQuery).then((res) => res.json());
+		let res = await response(graphqlQuery)
+			.then((res) => res.json())
+			.catch((err) => {
+				console.log(err);
+			});
 		return res.data.Trail;
+	},
+	getAll: async () => {
+		let graphqlQuery = {
+			query: `query{getAllTrails{name startLat startLong _id}}`,
+		};
+		let res = await response(graphqlQuery)
+			.then((res) => res.json())
+			.catch((err) => {
+				console.log(err);
+			});
+		return res.data.getAllTrails;
+	},
+	addToTrailList: async (trails) => {
+		let query = `mutation AddToTrailLiIst($trails: [TrailInput]) {
+			addToTrailList(trails: $trails) 
+		  }`;
+		let graphqlQuery = {
+			query: query,
+			variables: {
+				trails: trails,
+			},
+		};
+		let res = await response(graphqlQuery)
+			.then((res) => res.json())
+			.catch((err) => {
+				return err;
+			});
+		console.log(res);
+		return res.data.addToTrailList;
 	},
 };

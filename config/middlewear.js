@@ -18,8 +18,10 @@ exports.auth = function (req, res, next) {
 		let token = cookies.token;
 		try {
 			let decoded = jwt.verify(token, process.env.JWT_SECRET);
+			req.isAuth = true;
 			req.user = decoded;
 		} catch (err) {
+			req.isAuth = false;
 			req.user = false;
 			req.error = err;
 		}
