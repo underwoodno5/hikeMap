@@ -3,10 +3,11 @@ import React, { useEffect, useState } from "react";
 import { Trails } from "../api/TrailsApi";
 import "./TrailList.scss";
 
-interface TrailList {
+interface TrailListProps {
 	trails: Array<Trail>;
-	me?: Me;
+	me: Me | null;
 	myTrails?: Trail[];
+	throwError: Function;
 }
 
 interface Me {
@@ -18,12 +19,13 @@ interface Me {
 interface Trail {
 	_id: number;
 	name: string;
-	startLat: string;
-	startLong: string;
+	startLat: number;
+	startLong: number;
+	trailPath: [number, number][];
 }
 
-export default function TrailList(props: TrailList) {
-	const { trails, me, myTrails } = props;
+export default function TrailList(props: TrailListProps) {
+	const { trails, me, myTrails, throwError } = props;
 
 	//Start with an initial array to handle our checked/unchecked boxes and add false (unchecked) for each box.
 	//Then we can handle the checked state using setChecked
@@ -48,14 +50,17 @@ export default function TrailList(props: TrailList) {
 		setChecked(holdingArray);
 	};
 
-	const addTrailToList = (e: any) => {
+	const addTrailToList = async (e: any) => {
 		//We filter through the trails to find which ones are checked
 		//add pass them to the trail IDS to the API to save in the users trailList
 		const selectedTrails = trails.filter((element, i) => {
 			return checked[i] == true;
 		});
 
-		Trails.addToTrailList(selectedTrails);
+		const res = await Trails.addToTrailList(selectedTrails);
+		if (res.errors) {
+			throwError(res.errors[0]);
+		}
 
 		const holdingArray = checked.map((c, i) => {
 			return false;
@@ -86,8 +91,8 @@ export default function TrailList(props: TrailList) {
 					return (
 						<li key={i} className={matchArray[i]}>
 							<h4>{trailObject.name}</h4>
-							<h4>{trailObject.startLat}</h4>
-							<h4>{trailObject.startLong}</h4>
+							<h4>{`${trailObject.startLat}`}</h4>
+							<h4>{`${trailObject.startLong}`}</h4>
 							<input
 								type="checkbox"
 								id="vehicle1"

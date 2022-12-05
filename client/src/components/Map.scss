@@ -1,0 +1,17 @@
+.map-container-box {
+	width: 70%;
+}
+
+.leaflet-div-icon {
+	background: transparent;
+	border: none;
+	overflow: visible;
+
+	.map-icon {
+		font-size: 30px;
+		color: black;
+		position: relative;
+		bottom: 22px;
+		right: 10px;
+	}
+}

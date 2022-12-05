@@ -27,6 +27,8 @@ export default function Form(props: FormList) {
 		if (res.errors) {
 			console.log("error throw");
 			props.throwError(res.errors[0].message);
+		} else {
+			window.location.reload();
 		}
 	};
 

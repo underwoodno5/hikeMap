@@ -30,7 +30,7 @@ exports.Trails = {
 	},
 	getAll: async () => {
 		let graphqlQuery = {
-			query: `query{getAllTrails{name startLat startLong _id}}`,
+			query: `query{getAllTrails{name startLat startLong _id trailPath}}`,
 		};
 		let res = await response(graphqlQuery)
 			.then((res) => res.json())
@@ -55,6 +55,34 @@ exports.Trails = {
 				return err;
 			});
 		console.log(res);
-		return res.data.addToTrailList;
+		return res;
+	},
+	addToUserTrailPath: async (pathPoints, name) => {
+		let graphqlQuery = {
+			query: `mutation addToUserTrailPath(${pathPoints},${name})`,
+		};
+		let res = await response(graphqlQuery)
+			.then((res) => res.json())
+			.catch((err) => {
+				return err;
+			});
+		console.log(res);
+		return res;
+	},
+
+	mapConversion: (list) => {
+		let arrayone = list.split(",");
+
+		let arraytwo = [];
+
+		arrayone.forEach((item) => {
+			let newItem = item.trim();
+			let stringArray = newItem.split(" ");
+			let numberArray = [];
+			stringArray.forEach((string) => {
+				numberArray.push(parseFloat(string));
+			});
+			arraytwo.push(numberArray.reverse());
+		});
 	},
 };

@@ -9,14 +9,14 @@ export default function LandingPage() {
 	});
 	const leaveLanding = () => {
 		setAnimateClass({
-			slideDown: "slide-down",
-			slideUp: "slide-up",
+			slideDown: "slide-it-down",
+			slideUp: "slide-it-up",
 		});
 	};
 	return (
 		<div className="landing-container">
 			<div className={`top-box ${animateClass.slideUp}`}>
-				<h1>We made a decent hiking app!</h1>
+				<h1>Intranet application for data collection</h1>
 				<div className="diffuse-container">
 					<div className="diffuse-bubble"></div>
 				</div>

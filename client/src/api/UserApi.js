@@ -26,10 +26,12 @@ exports.User = {
 			.catch((err) => {
 				console.log(err);
 			});
-		localStorage.setItem(
-			"myTrailList",
-			JSON.stringify(res.data.login.trailList)
-		);
+		if (!res.errors) {
+			localStorage.setItem(
+				"myTrailList",
+				JSON.stringify(res.data.login.trailList)
+			);
+		}
 
 		return res;
 	},

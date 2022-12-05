@@ -7,17 +7,15 @@
 	45px
 );
 
-@include mixins.vertical-animation-mixin(slide-up, 0, -150%, -150%);
+@include mixins.vertical-animation-mixin(slide-it-up, 0, -150%, -150%);
 @include mixins.vertical-animation-mixin(slide-down, 0, 200%, 200%);
 
-.slide-up {
-	animation: slide-up 0.8s cubic-bezier(0.39, 0.575, 0.565, 1) both,
-		fade-in 0.8s cubic-bezier(0.39, 0.575, 0.565, 1) both;
+.slide-it-up {
+	animation: slide-it-up 0.8s cubic-bezier(0.39, 0.575, 0.565, 1) both;
 	animation-delay: 0.3s;
 }
-.slide-down {
-	animation: slide-down 1s cubic-bezier(0.39, 0.575, 0.565, 1) both,
-		fade-in 0.8s cubic-bezier(0.39, 0.575, 0.565, 1) both;
+.slide-it-down {
+	animation: slide-down 1s cubic-bezier(0.39, 0.575, 0.565, 1) both;
 }
 
 .pulse {

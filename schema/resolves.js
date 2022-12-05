@@ -9,8 +9,17 @@ const { Schema } = mongoose;
 //------------------
 const Trail = mongoose.model("Trail", {
 	name: String,
-	startLat: String,
-	startLong: String,
+	startLat: Number,
+	startLong: Number,
+	trailPath: [[Number]],
+});
+
+const UserTrail = mongoose.model("UserTrail", {
+	createdby: Schema.Types.ObjectId,
+	name: String,
+	startLat: Number,
+	startLong: Number,
+	trailPath: [[Number]],
 });
 
 const User = mongoose.model("User", {
@@ -19,11 +28,30 @@ const User = mongoose.model("User", {
 	joinDate: String,
 	token: String,
 	trailList: [{ type: Schema.Types.ObjectId, ref: Trail }],
+	userTrails: [{ type: Schema.Types.ObjectId, ref: UserTrail }],
 });
 
 //------------------
 //------- Resolves
 //------------------
+
+//////---- Contents ----\\\\\\
+
+//------- User Stuff -------\\
+//- createUser
+//- login
+//-	deleteUser
+//-	me
+
+//------- Trail Stuff -------\\
+//- Trail
+//- createTrail
+//- getAllTrails
+
+//----- User Trail Stuff -----\\
+//- addToTrailList
+//- getMyTrailList
+//- addToUserTrailPath
 
 exports.roots = {
 	//------- User Stuff -------\\
@@ -56,7 +84,9 @@ exports.roots = {
 	},
 
 	login: async ({ name, password }, context) => {
-		const user = await User.findOne({ name: name }).populate("trailList");
+		const user = await User.findOne({ name: name })
+			.populate("trailList")
+			.populate("userTrails");
 		if (!user) {
 			throw new Error(
 				"Error: Either the user does not exist or password was incorrect"
@@ -106,13 +136,27 @@ exports.roots = {
 			);
 		}
 	},
-
 	me: async (_, context) => {
 		const user = context.req.user;
 		if (!user) {
 			throw new Error("Error: bad token");
 		} else {
 			return user;
+		}
+	},
+
+	adminCheck: async ({ name, password }) => {
+		const user = context.req.user;
+		const hash = user.password;
+		if (user && user.admin) {
+			const passCheck = await bcrypt.compare(password, hash);
+			if (passCheck == true) {
+				return true;
+			} else {
+				throw new Error("Error: You aren't an admin");
+			}
+		} else {
+			throw new Error("Error: You aren't an admin");
 		}
 	},
 
@@ -127,25 +171,31 @@ exports.roots = {
 		}
 	},
 
-	createTrail: async ({ name, startLat, startLong }, context) => {
+	createTrail: async ({ name, trailPath }, context) => {
 		if (!context.req.isAuth) {
 			throw new Error(
 				"Not authorized, please login to add a new trail to the database"
 			);
 		}
+		const startLat = trailPath[0][0];
+		const startLong = trailPath[0][1];
+
 		const trail = new Trail({
 			_id: new mongoose.Types.ObjectId(),
 			name,
 			startLat,
 			startLong,
+			trailPath,
 		});
 		await trail.save();
 		return trail;
 	},
 
-	test: async () => {
-		return "test success!";
+	getAllTrails: async ({}, context) => {
+		const allTrails = await Trail.find({});
+		return allTrails;
 	},
+	//------- User Trail Stuff -------\\
 
 	addToTrailList: async ({ trails }, context) => {
 		//Check if user is loggedin, if they are find the user, compare incoming trail IDs to their list
@@ -191,7 +241,7 @@ exports.roots = {
 			},
 			process.env.JWT_SECRET
 		);
-		user.save();
+		await user.save();
 		context.res.cookie("token", user.token, {
 			httpOnly: false,
 			sameSite: "Strict",
@@ -200,12 +250,28 @@ exports.roots = {
 		});
 		return user.trailList;
 	},
-	getAllTrails: async ({}, context) => {
-		const allTrails = await Trail.find({});
-		return allTrails;
-	},
+	addCustomUserTrail: async ({ pathPoints, name }, context) => {
+		if (!context.req.isAuth) {
+			throw new Error(
+				"You must be logged in to save a custom trail path, it will be cached while you login/create an account so you can save it."
+			);
+		}
+		const userId = context.req.user.id;
+		const user = await User.findOne({ userId });
 
-	test: async () => {
-		return "test success!";
+		const userTrail = new UserTrail({
+			_id: new mongoose.Types.ObjectId(),
+			createdby: userId,
+			name,
+			startLat: pathPoints[0][0],
+			startLong: pathPoints[0][1],
+			trailPath: pathPoints,
+		});
+		console.log(userTrail._id);
+		user.userTrails.push(userTrail._id);
+		await user.save();
+		await userTrail.save();
+
+		return userTrail;
 	},
 };

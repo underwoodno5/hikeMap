@@ -14,8 +14,9 @@ type Query{
 type Mutation{
 	createUser(name:String, password: String):User
 	login(name: String, password:String): User
-	createTrail(name: String, startLat:String, startLong:String): Trail
+	createTrail(name: String, trailPath:[[Float]]): Trail
 	addToTrailList(trails: [TrailInput]): String
+	addCustomUserTrail(pathPoints: [[Float]], name:String): UserTrail
 }
 
 type User{
@@ -25,12 +26,28 @@ type User{
 	token: String
 	id: String
 	trailList: [Trail]
+	userTrails: [UserTrail]
+}
+
+type UserPath{
+	trailId: String,
+	trailPath: [[Float]]
 }
 
 type Trail{
     name: String!
+    startLat: Float!
+    startLong: Float!
+	trailPath: [[Float]]!
+	_id: String
+}
+
+type UserTrail{
+	createdby: String
+	name: String!
     startLat: String!
     startLong: String!
+	trailPath: [[Float]]!
 	_id: String
 }
 

@@ -2,7 +2,6 @@ const jwt = require("jsonwebtoken");
 
 exports.auth = function (req, res, next) {
 	const cookieString = req.headers.cookie;
-
 	if (!cookieString) {
 		req.isAuth = false;
 		return next();
