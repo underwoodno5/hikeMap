@@ -1,5 +1,6 @@
 import e from "express";
 import React, { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
 import { Trails } from "../api/TrailsApi";
 import "./TrailList.scss";
 
@@ -13,7 +14,6 @@ interface TrailListProps {
 interface Me {
 	_id: number;
 	name: string;
-	trailList: Trail[];
 }
 
 interface Trail {
@@ -59,9 +59,8 @@ export default function TrailList(props: TrailListProps) {
 
 		const res = await Trails.addToTrailList(selectedTrails);
 		if (res.errors) {
-			throwError(res.errors[0]);
+			throwError(res.errors[0].message);
 		}
-
 		const holdingArray = checked.map((c, i) => {
 			return false;
 		});
@@ -89,19 +88,21 @@ export default function TrailList(props: TrailListProps) {
 			<ul>
 				{trails.map((trailObject, i) => {
 					return (
-						<li key={i} className={matchArray[i]}>
-							<h4>{trailObject.name}</h4>
-							<h4>{`${trailObject.startLat}`}</h4>
-							<h4>{`${trailObject.startLong}`}</h4>
-							<input
-								type="checkbox"
-								id="vehicle1"
-								name={trailObject.name}
-								value={i}
-								onChange={handleChange}
-								checked={checked[i]}
-							/>
-						</li>
+						<Link to="/map" state={{ clickedIndex: i }} key={i}>
+							<li className={matchArray[i]}>
+								<h4>{trailObject.name}</h4>
+								<h4>{`${trailObject.startLat}`}</h4>
+								<h4>{`${trailObject.startLong}`}</h4>
+								<input
+									type="checkbox"
+									id="vehicle1"
+									name={trailObject.name}
+									value={i}
+									onChange={handleChange}
+									checked={checked[i]}
+								/>
+							</li>
+						</Link>
 					);
 				})}
 			</ul>

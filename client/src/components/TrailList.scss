@@ -5,10 +5,10 @@
 	width: 90%;
 	align-self: center;
 	background-color: var(--blue-accent);
-	display: flex;
 	flex-direction: column;
-	@include mixins.center-flex;
-	padding: 0 0 50px 0;
+	display: flex;
+	align-items: center;
+	padding-bottom: 10px;
 
 	h3 {
 		align-self: flex-start;
@@ -16,17 +16,24 @@
 	}
 	ul {
 		list-style-type: none;
-		width: 90%;
-		margin: 0;
+		width: 95%;
+		height: calc(100vh - 270px);
+		overflow: scroll;
+		justify-content: flex-start;
+		a {
+			width: 95%;
+		}
+
 		li {
-			@include mixins.card;
-			padding: 20px 25px 20px 25px;
-			background-color: var(--button-light);
-			color: var(--font-light);
+			// @include mixins.card;
+			// padding: 20px 25px 20px 25px;
+			// background-color: var(--button-light);
+			// color: var(--font-light);
 			display: flex;
 			justify-content: space-between;
 			align-items: center;
 			transition: background-color 0.25s ease-in;
+			width: auto;
 			&.match {
 				background-color: var(--background-dark);
 				&:hover {

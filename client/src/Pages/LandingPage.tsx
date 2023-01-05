@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import "./LandingPage.scss";
 import logo from "../images/logo.svg";
+import Search from "../components/Search";
 
 export default function LandingPage() {
 	const [animateClass, setAnimateClass] = useState({
@@ -15,7 +16,8 @@ export default function LandingPage() {
 	};
 	return (
 		<div className="landing-container">
-			<div className={`top-box ${animateClass.slideUp}`}>
+			<Search />
+			{/* <div className={`top-box ${animateClass.slideUp}`}>
 				<h1>Intranet application for data collection</h1>
 				<div className="diffuse-container">
 					<div className="diffuse-bubble"></div>
@@ -27,7 +29,7 @@ export default function LandingPage() {
 						<img src={logo} alt="SVG as an image" />
 					</div>
 				</div>
-			</div>
+			</div> */}
 		</div>
 	);
 }

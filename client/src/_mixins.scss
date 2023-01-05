@@ -30,6 +30,7 @@
 		}
 	}
 }
+
 @mixin opacity-animation-mixin($name, $from, $to) {
 	@keyframes #{$name} {
 		0% {
@@ -62,8 +63,14 @@
 	align-content: center;
 }
 
+@include opacity-animation-mixin(opacity-animation, 0, 1);
 @include animation-mixin(slide-out, 0, 110%);
+@include vertical-animation-mixin(slide-up, 50%, 0, -2%);
 
+.slide-up-fade-in {
+	animation: slide-up 0.5s cubic-bezier(0.39, 0.575, 0.565, 1) both,
+		fade-in 0.8s cubic-bezier(0.39, 0.575, 0.565, 1) both;
+}
 .slide-out {
 	animation: slide-out 0.8s ease-out forwards;
 }

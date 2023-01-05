@@ -3,6 +3,8 @@ const headers = {
 	"content-type": "application/json",
 };
 
+//-- Here we have all API from the frontend that deal with Trail data on the server.
+
 const response = (graphqlQuery) =>
 	fetch(endpoint, {
 		method: "POST",
@@ -69,7 +71,22 @@ exports.Trails = {
 		console.log(res);
 		return res;
 	},
-
+	addCustomUserTrail: async (pathPoints, name) => {
+		let graphqlQuery = {
+			query: `mutation{
+				addCustomUserTrail(pathPoints:${pathPoints}, name:"${name}"){
+				  name
+				  createdby
+				}
+			  }`,
+		};
+		let res = await response(graphqlQuery)
+			.then((res) => res.json())
+			.catch((err) => {
+				return err;
+			});
+		return res;
+	},
 	mapConversion: (list) => {
 		let arrayone = list.split(",");
 
@@ -84,5 +101,6 @@ exports.Trails = {
 			});
 			arraytwo.push(numberArray.reverse());
 		});
+		console.log(arraytwo);
 	},
 };

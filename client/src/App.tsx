@@ -1,12 +1,9 @@
 import React, { useState, useEffect } from "react";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 
-import Form from "./components/Form";
-import TopBar from "./components/TopBar";
 import TrailList from "./components/TrailList";
 import LandingPage from "./pages/LandingPage";
 import Layout from "./pages/Layout";
-import Map from "./components/Map";
 
 import { Trails } from "./api/TrailsApi";
 import { User } from "./api/UserApi";
@@ -15,12 +12,12 @@ import "./_mixins.scss";
 import "./App.scss";
 import "./_variables.scss";
 import LoginPage from "./pages/LoginPage";
-import { userInfo } from "os";
 import MapPage from "./pages/MapPage";
+
 interface Me {
 	_id: number;
 	name: string;
-	trailList: Trail[];
+	admin: boolean;
 }
 
 interface Trail {
@@ -29,11 +26,13 @@ interface Trail {
 	startLat: number;
 	startLong: number;
 	trailPath: [number, number][];
+	createdby?: number;
 }
 
 interface AppData {
 	user: Me | null;
 	allTrails: Trail[] | null;
+	userTrails?: Trail[];
 }
 
 function App() {
@@ -41,36 +40,38 @@ function App() {
 		user: null,
 		allTrails: null,
 	});
-	const [slide, setSlide] = useState("");
+	// const [slide, setSlide] = useState("");
+	// const mobile = window.matchMedia("(pointer: coarse)").matches;
+
 	const [loading, setLoading] = useState(true);
 	const [error, setError] = useState("");
-	const myTrails: Trail[] = JSON.parse(localStorage.getItem("myTrailList")!);
-	const mobile = window.matchMedia("(pointer: coarse)").matches;
 
 	useEffect(() => {
 		//Grab user data accordingly
-		const fetchUser = async () => {
-			const data = await User.me();
-			const fetchedAllTrails = await Trails.getAll();
+
+		const fetchData = async () => {
+			const response = await Promise.all([User.me(), Trails.getAll()]);
+
 			setAppData({
-				user: data.me,
-				allTrails: fetchedAllTrails,
+				user: response[0].data.me || null,
+				allTrails: response[1] || null,
 			});
-			console.log(fetchedAllTrails);
 			setLoading(false);
 		};
-		fetchUser().catch((err) => console.log(err));
+
+		fetchData().catch((err) => errorFunction(err.error[0].message));
 	}, []);
 
-	const click = () => {
-		setSlide("slide-out");
-	};
+	// const click = () => {
+	// 	setSlide("slide-out");
+	// };
 
 	//Global errorfunction. Pass this as a prop to any object that will throw errors, place error text in function.
 	const errorFunction = (x: string) => {
 		console.log("error");
 		setError(x);
 	};
+
 	const LoadingCheck = () => {
 		if (loading) {
 			return null;
@@ -89,7 +90,6 @@ function App() {
 									<TrailList
 										trails={appData.allTrails}
 										me={appData.user}
-										myTrails={myTrails}
 										throwError={errorFunction}
 									/>
 								}
@@ -99,16 +99,22 @@ function App() {
 							path="login"
 							element={
 								appData.user ? (
-									<LoginPage errorFunction={errorFunction} />
-								) : (
 									<Navigate to="/" />
+								) : (
+									<LoginPage errorFunction={errorFunction} />
 								)
 							}
 						/>
 						{appData.allTrails && (
 							<Route
 								path="map"
-								element={<MapPage trails={appData.allTrails} />}
+								element={
+									<MapPage
+										trails={appData.allTrails}
+										user={appData.user || null}
+										throwError={errorFunction}
+									/>
+								}
 							/>
 						)}
 					</Route>

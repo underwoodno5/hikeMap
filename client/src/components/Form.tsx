@@ -23,9 +23,7 @@ export default function Form(props: FormList) {
 		event.preventDefault();
 		let values = Object.values(formInfo);
 		const res = await props.submitFunction(...values);
-		console.log(res);
 		if (res.errors) {
-			console.log("error throw");
 			props.throwError(res.errors[0].message);
 		} else {
 			window.location.reload();

@@ -1,14 +1,7 @@
-import {
-	divIcon,
-	latLng,
-	LatLngBounds,
-	LeafletMouseEvent,
-	marker,
-	polyline,
-} from "leaflet";
+import { divIcon, LatLngBounds, popup } from "leaflet";
 import React, { useEffect, useState, useRef } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
-// import * as L from "leaflet";
+import * as L from "leaflet";
 
 import {
 	MapContainer,
@@ -17,6 +10,7 @@ import {
 	useMap,
 	useMapEvents,
 	Polyline,
+	Popup,
 } from "react-leaflet";
 
 import "./Map.scss";
@@ -25,6 +19,8 @@ interface MapProps {
 	centre: [number, number];
 	markerPosition: [number, number];
 	trailPath: [number, number][];
+	clear: boolean;
+	clearMap: Function;
 }
 
 export default function Map(props: MapProps) {
@@ -40,8 +36,28 @@ export default function Map(props: MapProps) {
 		trailPath: trailPath,
 	});
 	let pinDragArray: [number, number][] = [];
+	const [tentArray, setTentArray] = useState<[number, number][]>([]);
+	const [waterArray, setWaterArray] = useState<[number, number][]>([]);
+	const [popupPosition, setPopupPosition] = useState<[number, number] | null>(
+		null
+	);
 
 	useEffect(() => {
+		//Clearing polyline for custom map
+		if (props.clear === true) {
+			setPinArray([]);
+			props.clearMap();
+			localStorage.setItem("customMapPath", JSON.stringify(""));
+		}
+	}, [props.clear]);
+
+	const p = 10;
+	const [pinArray, setPinArray] = useState<[number, number][]>(trailPath);
+
+	const ref = useRef();
+
+	useEffect(() => {
+		setPinArray(props.trailPath);
 		setMapPositions({
 			centre: props.centre,
 			markerPosition: markerPosition,
@@ -49,10 +65,16 @@ export default function Map(props: MapProps) {
 		});
 	}, [props.centre, props.trailPath]);
 
-	const p = 10;
-	const [pinArray, setPinArray] = useState<[number, number][]>(trailPath);
-
-	const ref = useRef();
+	useEffect(() => {
+		localStorage.setItem(
+			"customMapPath",
+			JSON.stringify({
+				pinArray: pinArray,
+				tentArray: tentArray,
+				waterArray: waterArray,
+			})
+		);
+	}, [pinArray, tentArray, waterArray]);
 
 	const ThisMap = () => {
 		//----- Map controls!
@@ -68,7 +90,9 @@ export default function Map(props: MapProps) {
 
 		const mapClick = useMapEvents({
 			click: (e) => {
-				setPinArray((current) => [...current, [e.latlng.lat, e.latlng.lng]]);
+				// setPinArray((current) => [...current, [e.latlng.lat, e.latlng.lng]]);
+				// localStorage.setItem("customMapPath", JSON.stringify(pinArray));
+				console.log(e);
 			},
 			dragend: (e) => {
 				let newCentre: [number, number] = [
@@ -83,17 +107,50 @@ export default function Map(props: MapProps) {
 					});
 				}
 			},
+			contextmenu: (e) => {
+				console.log(e);
+				// map.openPopup(contextMenu, [e.latlng.lat, e.latlng.lng], {
+				// 	interactive: true,
+				// });
+				// L.popup()
+				// 	.setLatLng([e.latlng.lat, e.latlng.lng])
+				// 	.setContent(contextMenu)
+				// 	.openOn(map);
+				setPopupPosition([e.latlng.lat, e.latlng.lng]);
+			},
 		});
 		return null;
 	};
 
-	// Using leaflets div markup to use font icons as map pins
-	const pinMarkup = renderToStaticMarkup(
-		<i className="las la-map-pin map-icon" />
-	);
+	const addTent = async () => {
+		if (tentArray && popupPosition) {
+			setTentArray([...tentArray, popupPosition]);
+		} else if (popupPosition) {
+			setTentArray([popupPosition]);
+		}
+		setPopupPosition(null);
+	};
+	const addWater = async () => {
+		if (waterArray && popupPosition) {
+			setWaterArray((current) => [...current, popupPosition]);
+		} else if (popupPosition) {
+			setWaterArray([popupPosition]);
+		}
 
-	const customMarkerIcon = divIcon({
-		html: pinMarkup,
+		setPopupPosition(null);
+	};
+
+	// Using leaflets div markup to use font icons as map pins
+	const pinIcon = divIcon({
+		html: renderToStaticMarkup(<i className="las la-map-pin map-icon" />),
+	});
+	const tentIcon = divIcon({
+		html: renderToStaticMarkup(
+			<i className="las la-campground map-icon tent" />
+		),
+	});
+	const waterIcon = divIcon({
+		html: renderToStaticMarkup(<i className="las la-tint map-icon water" />),
 	});
 
 	return (
@@ -117,11 +174,79 @@ export default function Map(props: MapProps) {
 					positions={pinArray}
 				></Polyline>
 
+				{tentArray?.map((marker, i) => {
+					return (
+						<Marker
+							position={marker}
+							icon={tentIcon}
+							key={i}
+							draggable={true}
+							eventHandlers={{
+								keydown: (e) => {
+									if (e.originalEvent.code === "Backspace") {
+										if (tentArray) {
+											setTentArray((current) =>
+												current.filter((latlong) => latlong !== marker)
+											);
+										}
+										localStorage.setItem(
+											"customMapPath",
+											JSON.stringify({
+												pinArray: pinArray,
+												tentArray: tentArray,
+												waterArray: waterArray,
+											})
+										);
+									}
+								},
+							}}
+						></Marker>
+					);
+				})}
+				{waterArray?.map((marker, i) => {
+					return (
+						<Marker
+							position={marker}
+							icon={waterIcon}
+							key={i}
+							draggable={true}
+							bubblingMouseEvents={false}
+							eventHandlers={{
+								click: (e) => {},
+								keydown: (e) => {
+									if (e.originalEvent.code === "Backspace") {
+										if (waterArray) {
+											setWaterArray((current) =>
+												current.filter((latlong) => latlong !== marker)
+											);
+										}
+										localStorage.setItem(
+											"customMapPath",
+											JSON.stringify({
+												pinArray: pinArray,
+												tentArray: tentArray,
+												waterArray: waterArray,
+											})
+										);
+									}
+								},
+							}}
+						></Marker>
+					);
+				})}
+
+				{popupPosition && (
+					<Popup position={popupPosition} interactive={true}>
+						<button onClick={addTent}>Add tent marker</button>
+						<button onClick={addWater}>Add water marker</button>
+					</Popup>
+				)}
+
 				{pinArray.map((marker, i) => {
 					return (
 						<Marker
 							position={marker}
-							icon={customMarkerIcon}
+							icon={pinIcon}
 							key={i}
 							draggable={true}
 							eventHandlers={{
@@ -137,6 +262,14 @@ export default function Map(props: MapProps) {
 									if (e.originalEvent.code === "Backspace") {
 										setPinArray((current) =>
 											current.filter((latlong) => latlong !== marker)
+										);
+										localStorage.setItem(
+											"customMapPath",
+											JSON.stringify({
+												pinArray: pinArray,
+												tentArray: tentArray,
+												waterArray: waterArray,
+											})
 										);
 									}
 									if (e.originalEvent.code === "Space") {
@@ -168,6 +301,14 @@ export default function Map(props: MapProps) {
 											markerPosition: mapPositions.markerPosition,
 											trailPath: mapPositions.trailPath,
 										});
+										localStorage.setItem(
+											"customMapPath",
+											JSON.stringify({
+												pinArray: pinArray,
+												tentArray: tentArray,
+												waterArray: waterArray,
+											})
+										);
 									}
 								},
 								click: (e) => {},
@@ -197,6 +338,14 @@ export default function Map(props: MapProps) {
 										}
 									});
 									setPinArray(newArray);
+									localStorage.setItem(
+										"customMapPath",
+										JSON.stringify({
+											pinArray: pinArray,
+											tentArray: tentArray,
+											waterArray: waterArray,
+										})
+									);
 								},
 							}}
 						></Marker>

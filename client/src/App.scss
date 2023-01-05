@@ -14,6 +14,9 @@
 		justify-content: center;
 	}
 }
+a {
+	text-decoration: none;
+}
 
 a:hover,
 button:hover {
@@ -46,6 +49,18 @@ button {
 	transition: background-color 0.25s ease-in;
 	padding: 10px;
 
+	&.back {
+		background-color: transparent;
+		font-size: 1.5rem;
+		font-weight: 1000;
+		position: absolute;
+		left: 0;
+		top: 0;
+		&:hover {
+			background: transparent;
+		}
+	}
+
 	&.dark {
 		background-color: var(--button-dark);
 		color: var(--font-light);
@@ -67,7 +82,7 @@ button {
 		top: 0;
 		right: 5px;
 		background-color: transparent;
-		font-size: 21px;
+		font-size: 1.5rem;
 		font-weight: 1000;
 		&:hover {
 			background: transparent;
@@ -82,6 +97,14 @@ input[type="text"] {
 
 input[type="submit"] {
 	cursor: pointer;
+	width: auto;
+	align-self: flex-end;
+	padding: 10px;
+	height: auto;
+	margin-top: 5px;
+	&:hover {
+		background-color: var(--hover-light);
+	}
 }
 
 input:focus::placeholder {

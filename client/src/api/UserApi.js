@@ -2,6 +2,9 @@ const endpoint = "http://localhost:5000/graphql";
 const headers = {
 	"content-type": "application/json",
 };
+
+//-- Here we have all API calls from the frontend that deal with User data on the server.
+
 const response = (graphqlQuery) =>
 	fetch(endpoint, {
 		method: "POST",
@@ -18,6 +21,10 @@ exports.User = {
             token
 			trailList{
 				name
+				_id
+				trailPath
+				startLat
+				startLong
 			}
         }}`,
 		};
@@ -50,9 +57,31 @@ exports.User = {
 				  startLong
 				  _id
 				}
+				admin
 			  }}`,
 		};
 		let res = await response(graphqlQuery).then((res) => res.json());
-		return res.data;
+		console.log(res);
+		return res;
+	},
+	getUserTrails: async () => {
+		let graphqlQuery = {
+			query: `query{
+				getMyTrailList{
+					name
+					_id
+					trailPath
+					startLat
+					startLong
+			   }
+			   }`,
+		};
+		let res = await response(graphqlQuery)
+			.then((res) => res.json())
+			.catch((err) => {
+				return err;
+			});
+		console.log(res);
+		return res;
 	},
 };

@@ -13,5 +13,14 @@
 		position: relative;
 		bottom: 22px;
 		right: 10px;
+
+		&.tent {
+			bottom: 12px;
+			color: coral;
+		}
+		&.water {
+			bottom: 12px;
+			color: blue;
+		}
 	}
 }

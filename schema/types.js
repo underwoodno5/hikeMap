@@ -9,6 +9,7 @@ type Query{
 	test: String
 	getMyTrailList: [Trail]
 	getAllTrails: [Trail]
+	adminFunction(name: String!, password: String!): Boolean
 }
 
 type Mutation{
@@ -17,6 +18,8 @@ type Mutation{
 	createTrail(name: String, trailPath:[[Float]]): Trail
 	addToTrailList(trails: [TrailInput]): String
 	addCustomUserTrail(pathPoints: [[Float]], name:String): UserTrail
+	updateTrail(trailName:String, username:String, password:String, newName:String, newPath:[[Float]]): Trail
+
 }
 
 type User{
@@ -27,6 +30,7 @@ type User{
 	id: String
 	trailList: [Trail]
 	userTrails: [UserTrail]
+	admin: Boolean
 }
 
 type UserPath{
@@ -53,8 +57,11 @@ type UserTrail{
 
 input TrailInput{
 	name: String!
-    startLat: String!
-    startLong: String!
-	_id: String}
+    startLat: Float
+    startLong: Float
+	trailPath: [[Float]]
+	_id: String!
+}
+
 
 `;

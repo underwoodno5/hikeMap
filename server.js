@@ -8,6 +8,7 @@ const cors = require("cors");
 const resolves = require("./schema/resolves");
 const types = require("./schema/types");
 const auth = require("./config/middlewear").auth;
+
 //----------------------------
 //---- Config
 //----------------------------
@@ -37,6 +38,8 @@ app.use(
 );
 
 //---- Mongoose connection + Server spin
+
+//-- Setting STATUS in the .env will allow you to change your boot process depending on the environment.
 
 if (process.env.STATUS === "developer") {
 	const port = process.env.PORT;

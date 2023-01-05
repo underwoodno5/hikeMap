@@ -1,5 +1,18 @@
+@use "../mixins";
+
 .map-page-container {
 	width: 100%;
 	display: flex;
 	flex-direction: row;
+}
+
+.side-bar-container {
+	@include mixins.card;
+	width: 25%;
+	background-color: var(--blue-accent);
+
+	height: 80vh;
+	margin: 0 10px;
+	scroll-behavior: smooth;
+	overflow: scroll;
 }

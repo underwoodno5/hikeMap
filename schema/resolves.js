@@ -29,6 +29,11 @@ const User = mongoose.model("User", {
 	token: String,
 	trailList: [{ type: Schema.Types.ObjectId, ref: Trail }],
 	userTrails: [{ type: Schema.Types.ObjectId, ref: UserTrail }],
+	admin: Boolean,
+});
+
+const BlockedToken = mongoose.model("BlockedToken", {
+	token: String,
 });
 
 //------------------
@@ -87,6 +92,7 @@ exports.roots = {
 		const user = await User.findOne({ name: name })
 			.populate("trailList")
 			.populate("userTrails");
+
 		if (!user) {
 			throw new Error(
 				"Error: Either the user does not exist or password was incorrect"
@@ -94,13 +100,21 @@ exports.roots = {
 		} else {
 			const hash = user.password;
 			const passCheck = await bcrypt.compare(password, hash);
-			if (passCheck == true) {
-				user.token = jwt.sign(
-					{
+			const jwtData = user.admin
+				? {
 						id: user._id,
 						name: user.name,
-					},
-					process.env.JWT_SECRET
+						admin: true,
+				  }
+				: {
+						id: user._id,
+						name: user.name,
+				  };
+
+			if (passCheck == true) {
+				user.token = jwt.sign(
+					jwtData,
+					user.admin ? process.env.JWT_ADMIN_SECRET : process.env.JWT_SECRET
 				);
 				user.save();
 				context.res.cookie("token", user.token, {
@@ -145,10 +159,10 @@ exports.roots = {
 		}
 	},
 
-	adminCheck: async ({ name, password }) => {
-		const user = context.req.user;
+	adminCheck: async (name, password, context) => {
+		const user = await User.findOne({ name });
 		const hash = user.password;
-		if (user && user.admin) {
+		if (context.req.user && user && user.admin) {
 			const passCheck = await bcrypt.compare(password, hash);
 			if (passCheck == true) {
 				return true;
@@ -195,6 +209,28 @@ exports.roots = {
 		const allTrails = await Trail.find({});
 		return allTrails;
 	},
+	updateTrail: async (
+		{ trailName, username, password, newName, newPath },
+		context
+	) => {
+		const admin = await this.roots.adminCheck(username, password, context);
+		if (admin) {
+			try {
+				const trail = await Trail.findOne({ name: trailName });
+				if (!trail) {
+					throw new Error("No trail found with that name");
+				}
+				trail.name = newName || trail.name;
+				trail.trailPath = newPath || trail.trailPath;
+				trail.save();
+				return trail;
+			} catch (error) {
+				return error;
+			}
+		} else {
+			throw new Error("Error parsing admin request");
+		}
+	},
 	//------- User Trail Stuff -------\\
 
 	addToTrailList: async ({ trails }, context) => {
@@ -233,21 +269,6 @@ exports.roots = {
 			);
 		}
 		const user = await User.findOne({ id: userId }).populate("trailList");
-		user.token = jwt.sign(
-			{
-				id: user._id,
-				name: user.name,
-				trailList: user.trailList,
-			},
-			process.env.JWT_SECRET
-		);
-		await user.save();
-		context.res.cookie("token", user.token, {
-			httpOnly: false,
-			sameSite: "Strict",
-			maxAge: 86400 * 1000,
-			// secure: true, //un-comment in production
-		});
 		return user.trailList;
 	},
 	addCustomUserTrail: async ({ pathPoints, name }, context) => {

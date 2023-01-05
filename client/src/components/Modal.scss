@@ -1,0 +1,30 @@
+@use "../mixins";
+
+.modal-container {
+	display: flex;
+	position: absolute;
+	z-index: 1000;
+	width: 100%;
+	height: 100vh;
+	top: 0;
+	left: 0;
+	background-color: var(--background-dark);
+	justify-content: center;
+	align-items: center;
+	opacity: 0;
+	animation: opacity-animation 0.2s ease-out forwards;
+	overflow: hidden;
+
+	.modal {
+		@include mixins.card;
+		width: 40%;
+		background-color: var(--red-accent);
+		min-height: 50vh;
+		padding: 20px;
+		overflow: hidden;
+
+		i {
+			color: var(--font-light);
+		}
+	}
+}

@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "startdev": "nodemon server.js"
+    "startdev": "nodemon server.js --experimental-fetch"
   },
   "author": "",
   "license": "ISC",
@@ -17,7 +17,8 @@
     "express-graphql": "^0.12.0",
     "graphql": "15.3",
     "jsonwebtoken": "^8.5.1",
-    "mongoose": "^6.6.2"
+    "mongoose": "^6.6.2",
+    "redis": "^4.5.1"
   },
   "devDependencies": {
     "nodemon": "^2.0.20"

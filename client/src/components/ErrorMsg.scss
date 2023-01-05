@@ -10,6 +10,7 @@
 	justify-content: space-around;
 	align-items: center;
 	background-color: var(--warn-color);
+	z-index: 2000;
 }
 
 @include mixins.vertical-animation-mixin(slide-up, 80px, 0, 0);
