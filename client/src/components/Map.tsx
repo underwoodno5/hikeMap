@@ -43,7 +43,7 @@ export default function Map(props: MapProps) {
 	);
 
 	useEffect(() => {
-		//Clearing polyline for custom map
+		//-- When a user selects a custom map this will clear the polyline;
 		if (props.clear === true) {
 			setPinArray([]);
 			props.clearMap();
@@ -78,8 +78,8 @@ export default function Map(props: MapProps) {
 
 	const ThisMap = () => {
 		//----- Map controls!
-		// So what we're doing here is panning to the centre position whenvever the map is rendered
-		// this allows us to change the centre state from the parent prop and jump around. Then we have a click
+		//--So what we're doing here is panning to the centre position whenvever the map is rendered;
+		// this allows us to change the centre state (taken from the parent prop) and jump around. Then we have a click
 		// event that takes the current position and adds it to the list of pins (pinArray). This array is also used
 		// to create the points of our line. We have a mouseup event that sets the centre to wherever the user moves
 		// so on re-renders it doesn't jump back to the previous state.
@@ -90,9 +90,8 @@ export default function Map(props: MapProps) {
 
 		const mapClick = useMapEvents({
 			click: (e) => {
-				// setPinArray((current) => [...current, [e.latlng.lat, e.latlng.lng]]);
-				// localStorage.setItem("customMapPath", JSON.stringify(pinArray));
-				console.log(e);
+				setPinArray((current) => [...current, [e.latlng.lat, e.latlng.lng]]);
+				localStorage.setItem("customMapPath", JSON.stringify(pinArray));
 			},
 			dragend: (e) => {
 				let newCentre: [number, number] = [
@@ -108,21 +107,15 @@ export default function Map(props: MapProps) {
 				}
 			},
 			contextmenu: (e) => {
-				console.log(e);
-				// map.openPopup(contextMenu, [e.latlng.lat, e.latlng.lng], {
-				// 	interactive: true,
-				// });
-				// L.popup()
-				// 	.setLatLng([e.latlng.lat, e.latlng.lng])
-				// 	.setContent(contextMenu)
-				// 	.openOn(map);
 				setPopupPosition([e.latlng.lat, e.latlng.lng]);
 			},
 		});
 		return null;
 	};
 
-	const addTent = async () => {
+	//-- These add custom Tent/Water markers,prevent the button click from passing to the map, and ensure the popup closes.
+	const addTent = async (e: any) => {
+		e.stopPropagation();
 		if (tentArray && popupPosition) {
 			setTentArray([...tentArray, popupPosition]);
 		} else if (popupPosition) {
@@ -130,17 +123,18 @@ export default function Map(props: MapProps) {
 		}
 		setPopupPosition(null);
 	};
-	const addWater = async () => {
+	const addWater = async (e: any) => {
+		e.stopPropagation();
+
 		if (waterArray && popupPosition) {
 			setWaterArray((current) => [...current, popupPosition]);
 		} else if (popupPosition) {
 			setWaterArray([popupPosition]);
 		}
-
 		setPopupPosition(null);
 	};
 
-	// Using leaflets div markup to use font icons as map pins
+	//--Using leaflets div markup to use font icons as map pins
 	const pinIcon = divIcon({
 		html: renderToStaticMarkup(<i className="las la-map-pin map-icon" />),
 	});
@@ -164,6 +158,21 @@ export default function Map(props: MapProps) {
 				<ThisMap />
 
 				<TileLayer url={mapAPI} />
+
+				{popupPosition && (
+					<Popup
+						position={popupPosition}
+						interactive={false}
+						eventHandlers={{
+							click: (e) => {
+								console.log("popup");
+							},
+						}}
+					>
+						<button onClick={(e) => addTent(e)}>Add tent marker</button>
+						<button onClick={(e) => addWater(e)}>Add water marker</button>
+					</Popup>
+				)}
 				<Polyline
 					pathOptions={{
 						color: "pink",
@@ -235,13 +244,6 @@ export default function Map(props: MapProps) {
 					);
 				})}
 
-				{popupPosition && (
-					<Popup position={popupPosition} interactive={true}>
-						<button onClick={addTent}>Add tent marker</button>
-						<button onClick={addWater}>Add water marker</button>
-					</Popup>
-				)}
-
 				{pinArray.map((marker, i) => {
 					return (
 						<Marker
@@ -250,14 +252,15 @@ export default function Map(props: MapProps) {
 							key={i}
 							draggable={true}
 							eventHandlers={{
-								// This is a big handler....
-								// *keydown space* a pin first finds the index of that pin from it's lat and long (from the click event)
-								//  that is used to create a boundary for the line, which is used to find the centre point (using leaflet methods)
-								//  then we insert the new pin into the array after the index at the found centre
-								// *keydown delete* deletes the pin from the pinArray
-								// *dragstart* adds the latlng of the dragged pin to a holding array
-								// **dragend* when the pin has finished dragging it finds the original pin (using the holding latlng) in the
-								//  pinArray and replaces it with the new latlng, moving the line.
+								//---This is a big handler---\\
+								//-- We'll break it down in parts:
+								//--*keydown space* first we find the index of the selected pin from it's lat and long (from the click event);
+								//that is used to create a boundary line which is then used to find the centre point (using leaflet methods);
+								//then we create a new pin with the centre point lat/long and insert into the array after the index of the selected pin
+								//--*keydown backspace* deletes the pin from the pinArray
+								//--*dragstart* adds the latlng of the dragged pin to a holding array
+								//--*dragend* when the pin has finished dragging it finds the original pin (using the holding latlng) in the
+								//pinArray and replaces it with the new latlng, moving the line.
 								keydown: (e) => {
 									if (e.originalEvent.code === "Backspace") {
 										setPinArray((current) =>

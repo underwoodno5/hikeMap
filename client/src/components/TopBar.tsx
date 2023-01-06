@@ -3,7 +3,10 @@ import "./TopBar.scss";
 import Menu from "./DropdownMenu";
 import logo from "../images/logo.svg";
 
-export default function TopBar() {
+export default function TopBar(props: { transition: Function }) {
+	const transition = () => {
+		console.log("ye");
+	};
 	return (
 		<div className="topBar-wrapper">
 			<div className="topBar-box">
@@ -11,7 +14,7 @@ export default function TopBar() {
 			</div>
 			<div className="topBar-box"></div>
 			<div className="topBar-box">
-				<Menu />
+				<Menu transition={props.transition} />
 			</div>
 		</div>
 	);

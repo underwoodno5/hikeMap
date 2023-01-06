@@ -47,18 +47,17 @@ function App() {
 	const [error, setError] = useState("");
 
 	useEffect(() => {
-		//Grab user data accordingly
+		//-- When loading the page (if connected to the internet) we want to grab the Userdata and Trails data from the server
+		//-- the api will store the info in localstorage
 
 		const fetchData = async () => {
 			const response = await Promise.all([User.me(), Trails.getAll()]);
-
 			setAppData({
 				user: response[0].data.me || null,
 				allTrails: response[1] || null,
 			});
 			setLoading(false);
 		};
-
 		fetchData().catch((err) => errorFunction(err.error[0].message));
 	}, []);
 
@@ -66,7 +65,7 @@ function App() {
 	// 	setSlide("slide-out");
 	// };
 
-	//Global errorfunction. Pass this as a prop to any object that will throw errors, place error text in function.
+	//-- This global errorfunction gets passed as a prop to any object that will throw errors, place error text in function.
 	const errorFunction = (x: string) => {
 		console.log("error");
 		setError(x);

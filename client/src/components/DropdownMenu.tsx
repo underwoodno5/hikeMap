@@ -1,31 +1,32 @@
-import React from "react";
-import { Link } from "react-router-dom";
+import React, { useState } from "react";
+import { Link, useLocation } from "react-router-dom";
 import "./DropdownMenu.scss";
 
-export default function Menu() {
+export default function Menu(props: { transition: Function }) {
 	let showMenu = false;
-	const menuClick = () => {
-		if (showMenu) {
-		}
-	};
+
+	const menuClick = () => {};
 	return (
 		<div className="dropdown-menu-container">
 			<i className="las la-bars"></i>
 			<menu>
 				<li>
-					<Link to="/">
-						<button className="light">here's a button</button>
-					</Link>
+					<button className="light" onClick={() => props.transition("/")}>
+						here's a button
+					</button>
 				</li>
 				<li>
-					<Link to="traillist">
-						<button className="light">here's a button</button>
-					</Link>
+					<button
+						className="light"
+						onClick={() => props.transition("traillist")}
+					>
+						here's a button
+					</button>
 				</li>
 				<li>
-					<Link to="login">
-						<button className="light">here's a button</button>
-					</Link>
+					<button className="light" onClick={() => props.transition("login")}>
+						here's a button
+					</button>
 				</li>
 			</menu>
 		</div>
