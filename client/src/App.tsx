@@ -5,6 +5,7 @@ import TrailList from "./components/TrailList";
 import LandingPage from "./pages/LandingPage";
 import Layout from "./pages/Layout";
 import UserPage from "./pages/UserPage";
+import About from "./pages/About";
 
 import { Trails } from "./api/TrailsApi";
 import { User } from "./api/UserApi";
@@ -28,6 +29,7 @@ interface Trail {
 	startLong: number;
 	trailPath: [number, number][];
 	createdby?: number;
+	distance: number;
 }
 
 interface AppData {
@@ -44,8 +46,6 @@ function App() {
 		userTrails: null,
 		userCustomTrails: null,
 	});
-	// const [slide, setSlide] = useState("");
-	// const mobile = window.matchMedia("(pointer: coarse)").matches;
 
 	const [loading, setLoading] = useState(true);
 	const [error, setError] = useState("");
@@ -66,10 +66,6 @@ function App() {
 		};
 		fetchData().catch((err) => console.log(err));
 	}, []);
-
-	// const click = () => {
-	// 	setSlide("slide-out");
-	// };
 
 	//-- This global errorfunction gets passed as a prop to any object that will throw errors, place error text in function.
 	const errorFunction = (x: string) => {
@@ -111,6 +107,7 @@ function App() {
 								)
 							}
 						/>
+						<Route path="about" element={<About />} />
 						{appData.allTrails && (
 							<Route
 								path="map"
@@ -119,6 +116,7 @@ function App() {
 										trails={appData.allTrails}
 										user={appData.user || null}
 										throwError={errorFunction}
+										appData={appData}
 									/>
 								}
 							/>

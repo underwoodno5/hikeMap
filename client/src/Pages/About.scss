@@ -1,0 +1,5 @@
+@use "../mixins";
+.about-container {
+	width: 100%;
+	@include mixins.center-flex;
+}

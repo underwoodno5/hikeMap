@@ -64,13 +64,13 @@ exports.User = {
 
 		//--if user logs in ok we grab their trail data and return as one item, otherwise return null
 		const myData = {
-			me: res.me,
+			me: res.data.me,
 			userTrailList: null,
 			customTrailList: null,
 		};
 
 		if (!res.data.errors) {
-			const fetchedTrails = this.User.getUserTrails();
+			const fetchedTrails = await this.User.getUserTrails();
 			myData.userTrailList = fetchedTrails.userTrailList;
 			myData.customTrailList = fetchedTrails.userCustomTrails;
 		}
@@ -86,13 +86,16 @@ exports.User = {
 					trailPath
 					startLat
 					startLong
+					distance
 				}
 					userCustomTrails{
 						name
 						_id
 						trailPath
 						startLat
-						startLong}
+						startLong
+						distance
+					}
 						
 			   }
 			   }`,

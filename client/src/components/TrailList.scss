@@ -25,9 +25,6 @@
 		height: calc(100vh - 270px);
 		overflow: scroll;
 		justify-content: flex-start;
-		a {
-			width: 95%;
-		}
 
 		li {
 			// @include mixins.card;
@@ -38,7 +35,8 @@
 			justify-content: space-between;
 			align-items: center;
 			transition: background-color 0.25s ease-in;
-			width: auto;
+			width: 94%;
+			z-index: 1;
 			&.match {
 				background-color: var(--background-dark);
 				&:hover {
@@ -48,6 +46,16 @@
 			&:hover {
 				background-color: var(--hover-light);
 				cursor: pointer;
+			}
+			h4 {
+				width: 30%;
+				text-align: left;
+			}
+			.input-container {
+				z-index: 10000;
+				width: 200px;
+				height: 50px;
+				background: red;
 			}
 		}
 	}

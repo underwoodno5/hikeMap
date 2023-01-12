@@ -1,5 +1,4 @@
-import React, { useState } from "react";
-import { Link, useLocation } from "react-router-dom";
+import React from "react";
 import "./DropdownMenu.scss";
 
 export default function Menu(props: { transition: Function }) {
@@ -8,7 +7,7 @@ export default function Menu(props: { transition: Function }) {
 			<i className="las la-bars"></i>
 			<menu>
 				<li>
-					<button className="light" onClick={() => props.transition("/")}>
+					<button className="light" onClick={() => props.transition("about")}>
 						here's a button
 					</button>
 				</li>

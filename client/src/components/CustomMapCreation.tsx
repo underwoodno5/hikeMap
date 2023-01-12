@@ -15,6 +15,9 @@ export default function CustomMapCreation(props: CustomMapCreationgProps) {
 	const { swapSideBar, throwError } = props;
 	const [showModal, setShowModal] = useState(false);
 
+	//-- When we save the path we take all the data from localstorage, we have to stringify the arrays otherwise we lose the *[]* and graphql
+	//won't be able to parse the request.
+
 	const savePath = async (name: string) => {
 		let storedPoints = localStorage.getItem("customMapPath");
 		let parsedPoints = JSON.parse(storedPoints || "{}");
@@ -23,9 +26,10 @@ export default function CustomMapCreation(props: CustomMapCreationgProps) {
 			JSON.stringify(parsedPoints.pinArray),
 			name,
 			JSON.stringify(parsedPoints.waterArray),
-			JSON.stringify(parsedPoints.tentArray)
+			JSON.stringify(parsedPoints.tentArray),
+			parsedPoints.distance
 		);
-		// modalStateSwap();
+		modalStateSwap();
 		return res;
 	};
 	const modalStateSwap = () => {

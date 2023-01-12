@@ -1,6 +1,5 @@
-import e from "express";
-import React, { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
+import React, { useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
 import { Trails } from "../api/TrailsApi";
 import "./TrailList.scss";
 
@@ -28,15 +27,17 @@ interface Trail {
 	startLat: number;
 	startLong: number;
 	trailPath: [number, number][];
+	distance: number;
 }
 
 export default function TrailList(props: TrailListProps) {
 	const { allTrails, userTrails, userCustomTrails } = props.appData;
-	const { trails, me, myTrails, throwError } = props;
+	const { trails, myTrails, throwError } = props;
+	const navigate = useNavigate();
 
 	const [displayedTrails, setDisplayedTrails] = useState(trails);
 
-	//Start with an initial array to handle our checked/unchecked boxes and add false (unchecked) for each box.
+	//--Start with an initial array to handle our checked/unchecked boxes and add false (unchecked) for each box.
 	//Then we can handle the checked state using setChecked
 
 	const initialArray = trails.map((i) => {
@@ -47,23 +48,25 @@ export default function TrailList(props: TrailListProps) {
 	const matchArray: string[] = [];
 
 	const handleChange = (event: any) => {
-		//handle checking/unchecking boxes
 		const trailIndex = event.target.value;
-		const holdingArray = checked.map((c, i) => {
-			if (i == trailIndex) {
-				return !c;
-			} else {
-				return c;
-			}
-		});
-		setChecked(holdingArray);
+		console.log(trailIndex);
+
+		setChecked(
+			checked.map((c, i) => {
+				if (i == trailIndex) {
+					return !c;
+				} else {
+					return c;
+				}
+			})
+		);
 	};
 
 	const addTrailToList = async (e: any) => {
 		//We filter through the trails to find which ones are checked
 		//add pass them to the trail IDS to the API to save in the users trailList
 		const selectedTrails = trails.filter((element, i) => {
-			return checked[i] == true;
+			return checked[i] === true;
 		});
 
 		const res = await Trails.addToTrailList(selectedTrails);
@@ -109,21 +112,34 @@ export default function TrailList(props: TrailListProps) {
 			<ul>
 				{displayedTrails.map((trailObject, i) => {
 					return (
-						<Link to="/map" state={{ clickedIndex: i }} key={i}>
-							<li className={matchArray[i]}>
-								<h4>{trailObject.name}</h4>
-								<h4>{`${trailObject.startLat}`}</h4>
-								<h4>{`${trailObject.startLong}`}</h4>
-								<input
-									type="checkbox"
-									id="vehicle1"
-									name={trailObject.name}
-									value={i}
-									onChange={handleChange}
-									checked={checked[i]}
-								/>
-							</li>
-						</Link>
+						// <Link to="/map" state={{ clickedIndex: i }} key={i}>
+						<li
+							className={matchArray[i]}
+							key={i}
+							onClick={() =>
+								navigate("/map", {
+									state: { clickedIndex: i, displayedTrails: displayedTrails },
+								})
+							}
+						>
+							<h4>{trailObject.name}</h4>
+							<h4>{`Distance: ${
+								Math.round(trailObject.distance / 10) / 100
+							}km`}</h4>
+							<h4>{`${trailObject.startLong}`}</h4>
+							<input
+								type="checkbox"
+								id="vehicle1"
+								name={trailObject.name}
+								value={i}
+								onChange={handleChange}
+								onClick={(e) => {
+									e.stopPropagation();
+								}}
+								checked={checked[i]}
+							/>
+						</li>
+						// </Link>
 					);
 				})}
 			</ul>

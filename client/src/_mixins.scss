@@ -103,14 +103,3 @@
 		@content;
 	}
 }
-
-//headings
-
-h1 {
-	@include for-desktop() {
-		font-size: 5rem;
-		font-weight: 300;
-		letter-spacing: 0;
-		line-height: 1;
-	}
-}

@@ -32,17 +32,18 @@ exports.Trails = {
 	},
 	getAll: async () => {
 		let graphqlQuery = {
-			query: `query{getAllTrails{name startLat startLong _id trailPath}}`,
+			query: `query{getAllTrails{name startLat startLong _id trailPath distance}}`,
 		};
 		let res = await response(graphqlQuery)
 			.then((res) => res.json())
 			.catch((err) => {
 				console.log(err);
 			});
+		console.log(res);
 		return res.data.getAllTrails;
 	},
 	addToTrailList: async (trails) => {
-		let query = `mutation AddToTrailLiIst($trails: [TrailInput]) {
+		let query = `mutation AddToTrailList($trails: [TrailInput]) {
 			addToTrailList(trails: $trails) 
 		  }`;
 		let graphqlQuery = {
@@ -59,10 +60,16 @@ exports.Trails = {
 		console.log(res);
 		return res;
 	},
-	addCustomUserTrail: async (pathPoints, name, waterPoints, tentPoints) => {
+	addCustomUserTrail: async (
+		pathPoints,
+		name,
+		waterPoints,
+		tentPoints,
+		distance
+	) => {
 		let graphqlQuery = {
 			query: `mutation{
-				addCustomUserTrail(pathPoints:${pathPoints}, name:"${name}", waterPoints:${waterPoints}, tentPoints:${tentPoints}){
+				addCustomUserTrail(pathPoints:${pathPoints}, name:"${name}", waterPoints:${waterPoints}, tentPoints:${tentPoints} distance:${distance}){
 				  name
 				  createdby
 				}

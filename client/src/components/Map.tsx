@@ -63,6 +63,22 @@ export default function Map(props: MapProps) {
 		});
 	}, [centre, trailPath, markerPosition]);
 
+	const distanceFunction = () => {
+		let distance = 0;
+
+		pinArray.forEach((latlng, i) => {
+			if (i === pinArray.length - 1) {
+				return;
+			} else {
+				let startPoint = L.latLng(latlng);
+				let endPoint = L.latLng(pinArray[i + 1]);
+				let sectionDistance = startPoint.distanceTo(endPoint);
+				distance = distance + sectionDistance;
+			}
+		});
+		return distance;
+	};
+
 	useEffect(() => {
 		localStorage.setItem(
 			"customMapPath",
@@ -70,6 +86,7 @@ export default function Map(props: MapProps) {
 				pinArray: pinArray,
 				tentArray: tentArray,
 				waterArray: waterArray,
+				distance: distanceFunction(),
 			})
 		);
 	}, [pinArray, tentArray, waterArray]);
@@ -135,19 +152,6 @@ export default function Map(props: MapProps) {
 		}
 
 		map.panTo(mapPositions.centre);
-
-		let distance = 0;
-
-		pinArray.forEach((latlng, i) => {
-			if (i === pinArray.length - 1) {
-				return;
-			} else {
-				let startPoint = L.latLng(latlng);
-				let endPoint = L.latLng(pinArray[i + 1]);
-				let sectionDistance = startPoint.distanceTo(endPoint);
-				distance = distance + sectionDistance;
-			}
-		});
 
 		return null;
 	};

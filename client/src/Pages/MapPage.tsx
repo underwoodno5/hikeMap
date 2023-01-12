@@ -5,6 +5,20 @@ import MicroTrailList from "../components/MicroTrailList";
 import CustomMapCreation from "../components/CustomMapCreation";
 import "./MapPage.scss";
 
+interface Me {
+	_id: number;
+	name: string;
+}
+
+interface Trail {
+	_id: number;
+	name: string;
+	startLat: number;
+	startLong: number;
+	trailPath: [number, number][];
+	distance: number;
+}
+
 export default function MapPage(props: {
 	trails: {
 		_id: number;
@@ -20,6 +34,12 @@ export default function MapPage(props: {
 		name: string;
 		admin: boolean;
 	} | null;
+	appData: {
+		user: Me | null;
+		allTrails: Trail[] | null;
+		userTrails: Trail[] | null;
+		userCustomTrails: Trail[] | null;
+	};
 }) {
 	const { trails, user } = props;
 	const { state } = useLocation();
@@ -87,6 +107,7 @@ export default function MapPage(props: {
 						admin={user?.admin || false}
 						user={user}
 						swapSideBar={swapSideBar}
+						appData={props.appData}
 					/>
 				)}
 			</div>
