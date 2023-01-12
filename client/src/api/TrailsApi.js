@@ -59,22 +59,10 @@ exports.Trails = {
 		console.log(res);
 		return res;
 	},
-	addToUserTrailPath: async (pathPoints, name) => {
-		let graphqlQuery = {
-			query: `mutation addToUserTrailPath(${pathPoints},${name})`,
-		};
-		let res = await response(graphqlQuery)
-			.then((res) => res.json())
-			.catch((err) => {
-				return err;
-			});
-		console.log(res);
-		return res;
-	},
-	addCustomUserTrail: async (pathPoints, name) => {
+	addCustomUserTrail: async (pathPoints, name, waterPoints, tentPoints) => {
 		let graphqlQuery = {
 			query: `mutation{
-				addCustomUserTrail(pathPoints:${pathPoints}, name:"${name}"){
+				addCustomUserTrail(pathPoints:${pathPoints}, name:"${name}", waterPoints:${waterPoints}, tentPoints:${tentPoints}){
 				  name
 				  createdby
 				}

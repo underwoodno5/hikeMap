@@ -16,16 +16,20 @@ export default function CustomMapCreation(props: CustomMapCreationgProps) {
 	const [showModal, setShowModal] = useState(false);
 
 	const savePath = async (name: string) => {
-		const mapPath = localStorage.getItem("customMapPath");
-		const res = await Trails.addCustomUserTrail(mapPath, name);
-		console.log(res);
-		return res;
+		let storedPoints = localStorage.getItem("customMapPath");
+		let parsedPoints = JSON.parse(storedPoints || "{}");
+
+		const res = await Trails.addCustomUserTrail(
+			JSON.stringify(parsedPoints.pinArray),
+			name,
+			JSON.stringify(parsedPoints.waterArray),
+			JSON.stringify(parsedPoints.tentArray)
+		);
 		// modalStateSwap();
+		return res;
 	};
 	const modalStateSwap = () => {
-		// setShowModal(!showModal);
-		// console.log(showModal);
-		console.log(localStorage.getItem("customMapPath"));
+		setShowModal(!showModal);
 	};
 
 	const sideBarClick = () => {

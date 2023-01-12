@@ -13,11 +13,16 @@ export default function MicroTrailList(props: {
 	listFunction: Function;
 	admin: boolean;
 	swapSideBar: Function;
+	user: {
+		_id: number;
+		name: string;
+		admin: boolean;
+	} | null;
 }) {
 	const [isExpanded, setIsExpanded] = useState(-1);
 	const { state } = useLocation();
 	const scrollRef = useRef<HTMLLIElement>(null);
-	const { trails, listFunction, admin, swapSideBar } = props;
+	const { trails, listFunction, admin, swapSideBar, user } = props;
 
 	let scrolledItem = 0;
 
@@ -73,7 +78,7 @@ export default function MicroTrailList(props: {
 						}
 					>
 						<h4>{trailObject.name}</h4>
-						{isExpanded === i && (
+						{isExpanded === i && user && (
 							<div className="trail-list-expansion">
 								{admin && (
 									<button onClick={(e) => sideBarClick(e)}>

@@ -3,9 +3,6 @@ import { Link, useLocation } from "react-router-dom";
 import "./DropdownMenu.scss";
 
 export default function Menu(props: { transition: Function }) {
-	let showMenu = false;
-
-	const menuClick = () => {};
 	return (
 		<div className="dropdown-menu-container">
 			<i className="las la-bars"></i>

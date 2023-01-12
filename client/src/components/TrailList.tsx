@@ -9,6 +9,12 @@ interface TrailListProps {
 	me: Me | null;
 	myTrails?: Trail[];
 	throwError: Function;
+	appData: {
+		user: Me | null;
+		allTrails: Trail[] | null;
+		userTrails: Trail[] | null;
+		userCustomTrails: Trail[] | null;
+	};
 }
 
 interface Me {
@@ -25,7 +31,10 @@ interface Trail {
 }
 
 export default function TrailList(props: TrailListProps) {
+	const { allTrails, userTrails, userCustomTrails } = props.appData;
 	const { trails, me, myTrails, throwError } = props;
+
+	const [displayedTrails, setDisplayedTrails] = useState(trails);
 
 	//Start with an initial array to handle our checked/unchecked boxes and add false (unchecked) for each box.
 	//Then we can handle the checked state using setChecked
@@ -80,13 +89,25 @@ export default function TrailList(props: TrailListProps) {
 		}
 	};
 
+	const trailClick = (x: any) => {
+		setDisplayedTrails(x);
+	};
+
 	trailMatch();
 
 	return (
 		<div className="trail-list-container">
-			<h3>Trail List</h3>
+			<div className="list-tab">
+				<h3 onClick={() => trailClick(allTrails)}>Trail List</h3>
+				{props.me && (
+					<>
+						<h3 onClick={() => trailClick(userTrails)}>User List</h3>
+						<h3 onClick={() => trailClick(userCustomTrails)}>Custom List</h3>
+					</>
+				)}
+			</div>
 			<ul>
-				{trails.map((trailObject, i) => {
+				{displayedTrails.map((trailObject, i) => {
 					return (
 						<Link to="/map" state={{ clickedIndex: i }} key={i}>
 							<li className={matchArray[i]}>

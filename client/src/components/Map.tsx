@@ -1,5 +1,5 @@
-import { divIcon, LatLngBounds, popup } from "leaflet";
-import React, { useEffect, useState, useRef } from "react";
+import { divIcon, LatLngBounds } from "leaflet";
+import React, { useEffect, useState } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
 import * as L from "leaflet";
 
@@ -7,7 +7,6 @@ import {
 	MapContainer,
 	TileLayer,
 	Marker,
-	useMap,
 	useMapEvents,
 	Polyline,
 	Popup,
@@ -21,11 +20,13 @@ interface MapProps {
 	trailPath: [number, number][];
 	clear: boolean;
 	clearMap: Function;
+	expandMap: Function;
 }
 
 export default function Map(props: MapProps) {
 	const mapAPI = "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png";
-	const { markerPosition, trailPath, centre } = props;
+	const { markerPosition, trailPath, centre, clear, clearMap } = props;
+	const [fullScreen, setFullScreen] = useState(false);
 	const [mapPositions, setMapPositions] = useState<{
 		centre: [number, number];
 		markerPosition: [number, number];
@@ -44,26 +45,23 @@ export default function Map(props: MapProps) {
 
 	useEffect(() => {
 		//-- When a user selects a custom map this will clear the polyline;
-		if (props.clear === true) {
+		if (clear === true) {
 			setPinArray([]);
-			props.clearMap();
+			clearMap();
 			localStorage.setItem("customMapPath", JSON.stringify(""));
 		}
-	}, [props.clear]);
+	}, [clear, clearMap]);
 
-	const p = 10;
 	const [pinArray, setPinArray] = useState<[number, number][]>(trailPath);
 
-	const ref = useRef();
-
 	useEffect(() => {
-		setPinArray(props.trailPath);
+		setPinArray(trailPath);
 		setMapPositions({
-			centre: props.centre,
+			centre: centre,
 			markerPosition: markerPosition,
 			trailPath: trailPath,
 		});
-	}, [props.centre, props.trailPath]);
+	}, [centre, trailPath, markerPosition]);
 
 	useEffect(() => {
 		localStorage.setItem(
@@ -83,15 +81,9 @@ export default function Map(props: MapProps) {
 		// event that takes the current position and adds it to the list of pins (pinArray). This array is also used
 		// to create the points of our line. We have a mouseup event that sets the centre to wherever the user moves
 		// so on re-renders it doesn't jump back to the previous state.
-
-		const map = useMap();
-
-		map.panTo(mapPositions.centre);
-
-		const mapClick = useMapEvents({
+		const map = useMapEvents({
 			click: (e) => {
 				setPinArray((current) => [...current, [e.latlng.lat, e.latlng.lng]]);
-				localStorage.setItem("customMapPath", JSON.stringify(pinArray));
 			},
 			dragend: (e) => {
 				let newCentre: [number, number] = [
@@ -109,7 +101,54 @@ export default function Map(props: MapProps) {
 			contextmenu: (e) => {
 				setPopupPosition([e.latlng.lat, e.latlng.lng]);
 			},
+			keydown: (e) => {
+				if (e.originalEvent.code === "Escape") {
+					if (fullScreen === true) {
+						setFullScreen(false);
+						props.expandMap();
+						setTimeout(() => {
+							map.invalidateSize();
+						}, 400);
+					}
+				}
+			},
 		});
+
+		//-- This finds our expand div and turns it into a Leaflet DOM event. This lets us stop the click from propagating to the map
+		//and triggering map interaction.
+		var expandContainer = document.getElementsByClassName("expand")[0];
+
+		if (expandContainer) {
+			var c = expandContainer as HTMLElement;
+			L.DomEvent.addListener(c, "click", (e) => {
+				//--Our expand function has a little hack in it. Resising the container window doesn't cause a re-draw of the map, so we need to use
+				// *invalidateSize()* to have the map re-evaluate the container. It needs to wait until the container size has changed, hence the
+				//delay.
+
+				setFullScreen(!fullScreen);
+				props.expandMap();
+				setTimeout(() => {
+					map.invalidateSize();
+				}, 400);
+				e.stopPropagation();
+			});
+		}
+
+		map.panTo(mapPositions.centre);
+
+		let distance = 0;
+
+		pinArray.forEach((latlng, i) => {
+			if (i === pinArray.length - 1) {
+				return;
+			} else {
+				let startPoint = L.latLng(latlng);
+				let endPoint = L.latLng(pinArray[i + 1]);
+				let sectionDistance = startPoint.distanceTo(endPoint);
+				distance = distance + sectionDistance;
+			}
+		});
+
 		return null;
 	};
 
@@ -125,6 +164,7 @@ export default function Map(props: MapProps) {
 	};
 	const addWater = async (e: any) => {
 		e.stopPropagation();
+		console.log(e);
 
 		if (waterArray && popupPosition) {
 			setWaterArray((current) => [...current, popupPosition]);
@@ -147,15 +187,22 @@ export default function Map(props: MapProps) {
 		html: renderToStaticMarkup(<i className="las la-tint map-icon water" />),
 	});
 
+	//-- Style variable for the map, changes on fullsceen
+
 	return (
-		<div className="map-container-box">
+		<div className={`map-container-box ${fullScreen && "grow"}`}>
 			<MapContainer
-				style={{ height: "80vh", width: "100%" }}
+				style={{ height: "100vh", width: "100%" }}
 				center={centre}
 				zoom={20}
 				scrollWheelZoom={false}
 			>
 				<ThisMap />
+				<div className="leaflet-top leaflet-right">
+					<div className="leaflet-control leaflet-bar expand">
+						<i className="las la-expand"></i>
+					</div>
+				</div>
 
 				<TileLayer url={mapAPI} />
 
@@ -163,11 +210,7 @@ export default function Map(props: MapProps) {
 					<Popup
 						position={popupPosition}
 						interactive={false}
-						eventHandlers={{
-							click: (e) => {
-								console.log("popup");
-							},
-						}}
+						eventHandlers={{}}
 					>
 						<button onClick={(e) => addTent(e)}>Add tent marker</button>
 						<button onClick={(e) => addWater(e)}>Add water marker</button>
@@ -190,7 +233,9 @@ export default function Map(props: MapProps) {
 							icon={tentIcon}
 							key={i}
 							draggable={true}
+							bubblingMouseEvents={false}
 							eventHandlers={{
+								click: (e) => {},
 								keydown: (e) => {
 									if (e.originalEvent.code === "Backspace") {
 										if (tentArray) {
@@ -198,14 +243,6 @@ export default function Map(props: MapProps) {
 												current.filter((latlong) => latlong !== marker)
 											);
 										}
-										localStorage.setItem(
-											"customMapPath",
-											JSON.stringify({
-												pinArray: pinArray,
-												tentArray: tentArray,
-												waterArray: waterArray,
-											})
-										);
 									}
 								},
 							}}
@@ -229,14 +266,6 @@ export default function Map(props: MapProps) {
 												current.filter((latlong) => latlong !== marker)
 											);
 										}
-										localStorage.setItem(
-											"customMapPath",
-											JSON.stringify({
-												pinArray: pinArray,
-												tentArray: tentArray,
-												waterArray: waterArray,
-											})
-										);
 									}
 								},
 							}}
@@ -265,14 +294,6 @@ export default function Map(props: MapProps) {
 									if (e.originalEvent.code === "Backspace") {
 										setPinArray((current) =>
 											current.filter((latlong) => latlong !== marker)
-										);
-										localStorage.setItem(
-											"customMapPath",
-											JSON.stringify({
-												pinArray: pinArray,
-												tentArray: tentArray,
-												waterArray: waterArray,
-											})
 										);
 									}
 									if (e.originalEvent.code === "Space") {
@@ -304,14 +325,6 @@ export default function Map(props: MapProps) {
 											markerPosition: mapPositions.markerPosition,
 											trailPath: mapPositions.trailPath,
 										});
-										localStorage.setItem(
-											"customMapPath",
-											JSON.stringify({
-												pinArray: pinArray,
-												tentArray: tentArray,
-												waterArray: waterArray,
-											})
-										);
 									}
 								},
 								click: (e) => {},
@@ -331,7 +344,7 @@ export default function Map(props: MapProps) {
 
 									const newArray = pinArray.map((item) => {
 										if (
-											item[0] == pinDragArray[0][0] &&
+											item[0] === pinDragArray[0][0] &&
 											item[1] &&
 											pinDragArray[0][1]
 										) {
@@ -341,14 +354,6 @@ export default function Map(props: MapProps) {
 										}
 									});
 									setPinArray(newArray);
-									localStorage.setItem(
-										"customMapPath",
-										JSON.stringify({
-											pinArray: pinArray,
-											tentArray: tentArray,
-											waterArray: waterArray,
-										})
-									);
 								},
 							}}
 						></Marker>

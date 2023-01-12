@@ -4,9 +4,6 @@ import Menu from "./DropdownMenu";
 import logo from "../images/logo.svg";
 
 export default function TopBar(props: { transition: Function }) {
-	const transition = () => {
-		console.log("ye");
-	};
 	return (
 		<div className="topBar-wrapper">
 			<div className="topBar-box">

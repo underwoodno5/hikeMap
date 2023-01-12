@@ -61,18 +61,39 @@ exports.User = {
 			  }}`,
 		};
 		let res = await response(graphqlQuery).then((res) => res.json());
-		console.log(res);
-		return res;
+
+		//--if user logs in ok we grab their trail data and return as one item, otherwise return null
+		const myData = {
+			me: res.me,
+			userTrailList: null,
+			customTrailList: null,
+		};
+
+		if (!res.data.errors) {
+			const fetchedTrails = this.User.getUserTrails();
+			myData.userTrailList = fetchedTrails.userTrailList;
+			myData.customTrailList = fetchedTrails.userCustomTrails;
+		}
+		return myData;
 	},
 	getUserTrails: async () => {
 		let graphqlQuery = {
 			query: `query{
 				getMyTrailList{
+					userTrailList{
 					name
 					_id
 					trailPath
 					startLat
 					startLong
+				}
+					userCustomTrails{
+						name
+						_id
+						trailPath
+						startLat
+						startLong}
+						
 			   }
 			   }`,
 		};
@@ -81,7 +102,10 @@ exports.User = {
 			.catch((err) => {
 				return err;
 			});
-		console.log(res);
-		return res;
+		if (res.data.error) {
+			return res.error;
+		} else {
+			return res.data.getMyTrailList;
+		}
 	},
 };

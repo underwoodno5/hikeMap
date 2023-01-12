@@ -1,8 +1,11 @@
 import React, { useEffect, useState } from "react";
 import "./LandingPage.scss";
 import logo from "../images/logo.svg";
+import { useNavigate } from "react-router";
 
 export default function LandingPage() {
+	const navigate = useNavigate();
+
 	const [animateClass, setAnimateClass] = useState({
 		slideDown: "",
 		slideUp: "",
@@ -16,7 +19,10 @@ export default function LandingPage() {
 
 	return (
 		<div className="landing-container">
-			<div className={`top-box ${animateClass.slideUp}`}>
+			<div
+				className={`top-box ${animateClass.slideUp}`}
+				onAnimationEnd={() => navigate("trailList")}
+			>
 				<h1>Intranet application for data collection</h1>
 				<div className="diffuse-container">
 					<div className="diffuse-bubble"></div>

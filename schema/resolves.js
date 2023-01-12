@@ -12,6 +12,7 @@ const Trail = mongoose.model("Trail", {
 	startLat: Number,
 	startLong: Number,
 	trailPath: [[Number]],
+	distance: Number,
 });
 
 const UserTrail = mongoose.model("UserTrail", {
@@ -20,6 +21,7 @@ const UserTrail = mongoose.model("UserTrail", {
 	startLat: Number,
 	startLong: Number,
 	trailPath: [[Number]],
+	distance: Number,
 });
 
 const User = mongoose.model("User", {
@@ -200,6 +202,7 @@ exports.roots = {
 			startLat,
 			startLong,
 			trailPath,
+			distance,
 		});
 		await trail.save();
 		return trail;
@@ -210,7 +213,7 @@ exports.roots = {
 		return allTrails;
 	},
 	updateTrail: async (
-		{ trailName, username, password, newName, newPath },
+		{ trailName, username, password, newName, newPath, newDistance },
 		context
 	) => {
 		const admin = await this.roots.adminCheck(username, password, context);
@@ -222,6 +225,7 @@ exports.roots = {
 				}
 				trail.name = newName || trail.name;
 				trail.trailPath = newPath || trail.trailPath;
+				trail.distance = newDistance || trail.distance;
 				trail.save();
 				return trail;
 			} catch (error) {
@@ -243,7 +247,6 @@ exports.roots = {
 		}
 		const addedArray = [];
 		const user = await User.findOne({ id: context.req.user.id });
-		console.log(user);
 		const p = async () =>
 			await trails.forEach(async (trail) => {
 				if (user.trailList.includes(trail._id)) {
@@ -268,10 +271,19 @@ exports.roots = {
 				"Not authorized, please login to add a new trail to the database"
 			);
 		}
-		const user = await User.findOne({ id: userId }).populate("trailList");
-		return user.trailList;
+		const user = await User.findOne({ id: userId })
+			.populate("trailList")
+			.populate("userTrails");
+		const res = {
+			userTrailList: user.trailList,
+			userCustomTrails: user.userTrails,
+		};
+		return res;
 	},
-	addCustomUserTrail: async ({ pathPoints, name }, context) => {
+	addCustomUserTrail: async (
+		{ pathPoints, name, distance, waterPoints, tentPoints },
+		context
+	) => {
 		if (!context.req.isAuth) {
 			throw new Error(
 				"You must be logged in to save a custom trail path, it will be cached while you login/create an account so you can save it."
@@ -287,8 +299,10 @@ exports.roots = {
 			startLat: pathPoints[0][0],
 			startLong: pathPoints[0][1],
 			trailPath: pathPoints,
+			distance,
+			waterPoints,
+			tentPoints,
 		});
-		console.log(userTrail._id);
 		user.userTrails.push(userTrail._id);
 		await user.save();
 		await userTrail.save();

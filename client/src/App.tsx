@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from "react";
-import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import { BrowserRouter, Routes, Route } from "react-router-dom";
 
 import TrailList from "./components/TrailList";
 import LandingPage from "./pages/LandingPage";
 import Layout from "./pages/Layout";
+import UserPage from "./pages/UserPage";
 
 import { Trails } from "./api/TrailsApi";
 import { User } from "./api/UserApi";
@@ -32,13 +33,16 @@ interface Trail {
 interface AppData {
 	user: Me | null;
 	allTrails: Trail[] | null;
-	userTrails?: Trail[];
+	userTrails: Trail[] | null;
+	userCustomTrails: Trail[] | null;
 }
 
 function App() {
 	const [appData, setAppData] = useState<AppData>({
 		user: null,
 		allTrails: null,
+		userTrails: null,
+		userCustomTrails: null,
 	});
 	// const [slide, setSlide] = useState("");
 	// const mobile = window.matchMedia("(pointer: coarse)").matches;
@@ -53,12 +57,14 @@ function App() {
 		const fetchData = async () => {
 			const response = await Promise.all([User.me(), Trails.getAll()]);
 			setAppData({
-				user: response[0].data.me || null,
+				user: response[0].me,
 				allTrails: response[1] || null,
+				userTrails: response[0].userTrailList,
+				userCustomTrails: response[0].customTrailList,
 			});
 			setLoading(false);
 		};
-		fetchData().catch((err) => errorFunction(err.error[0].message));
+		fetchData().catch((err) => console.log(err));
 	}, []);
 
 	// const click = () => {
@@ -87,6 +93,7 @@ function App() {
 								path="traillist"
 								element={
 									<TrailList
+										appData={appData}
 										trails={appData.allTrails}
 										me={appData.user}
 										throwError={errorFunction}
@@ -98,7 +105,7 @@ function App() {
 							path="login"
 							element={
 								appData.user ? (
-									<Navigate to="/" />
+									<UserPage me={appData.user} />
 								) : (
 									<LoginPage errorFunction={errorFunction} />
 								)

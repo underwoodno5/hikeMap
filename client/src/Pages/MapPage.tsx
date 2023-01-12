@@ -38,6 +38,7 @@ export default function MapPage(props: {
 		clear: false,
 		custom: false,
 	});
+	const [fullScreen, setFullScreen] = useState(false);
 
 	const moveMap = (x: number, y: number, z: [number, number][]) => {
 		setmapPositions({
@@ -47,8 +48,8 @@ export default function MapPage(props: {
 		});
 	};
 
-	// This function is called from the microtraillist, the map watches for this boolean change
-	// which triggers the effect that clears the pin array, removing the current trail path.
+	//--This function is called from the microtraillist, the map watches for this boolean change
+	//which triggers the effect that clears the pin array, removing the current trail path.
 	const clearMap = () => {
 		setModeObj({ clear: !modeObj.clear, custom: modeObj.custom });
 	};
@@ -57,16 +58,21 @@ export default function MapPage(props: {
 		setModeObj({ clear: modeObj.clear, custom: !modeObj.custom });
 	};
 
+	const expandMap = () => {
+		setFullScreen(!fullScreen);
+	};
+
 	return (
-		<div className={"map-page-container"}>
+		<div className={`map-page-container ${fullScreen && "full-screen"}`}>
 			<Map
 				centre={mapPositions.centre}
 				markerPosition={mapPositions.markerPosition}
 				trailPath={mapPositions.trailPath}
 				clear={modeObj.clear}
 				clearMap={clearMap}
+				expandMap={expandMap}
 			/>
-			<div className="side-bar-container">
+			<div className={`side-bar-container ${fullScreen && "hide"}`}>
 				{modeObj.custom && (
 					<CustomMapCreation
 						clearMap={clearMap}
@@ -79,6 +85,7 @@ export default function MapPage(props: {
 						trails={state.trails ? state.trails : trails}
 						listFunction={moveMap}
 						admin={user?.admin || false}
+						user={user}
 						swapSideBar={swapSideBar}
 					/>
 				)}
