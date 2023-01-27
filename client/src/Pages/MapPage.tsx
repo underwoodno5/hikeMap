@@ -58,7 +58,7 @@ export default function MapPage(props: {
 		clear: false,
 		custom: false,
 	});
-	const [fullScreen, setFullScreen] = useState(false);
+	const [hideSideBar, setHideSideBar] = useState(false);
 
 	const moveMap = (x: number, y: number, z: [number, number][]) => {
 		setmapPositions({
@@ -78,21 +78,23 @@ export default function MapPage(props: {
 		setModeObj({ clear: modeObj.clear, custom: !modeObj.custom });
 	};
 
-	const expandMap = () => {
-		setFullScreen(!fullScreen);
+	const expandMap = (x: boolean) => {
+		setHideSideBar(!hideSideBar);
 	};
 
+	console.log(state);
+
 	return (
-		<div className={`map-page-container ${fullScreen && "full-screen"}`}>
+		<div className={`map-page-container`}>
 			<Map
 				centre={mapPositions.centre}
 				markerPosition={mapPositions.markerPosition}
 				trailPath={mapPositions.trailPath}
 				clear={modeObj.clear}
 				clearMap={clearMap}
-				expandMap={expandMap}
+				expandMap={(x: boolean) => expandMap(x)}
 			/>
-			<div className={`side-bar-container ${fullScreen && "hide"}`}>
+			<div className={`side-bar-container ${hideSideBar && "hide"}`}>
 				{modeObj.custom && (
 					<CustomMapCreation
 						clearMap={clearMap}
@@ -102,7 +104,7 @@ export default function MapPage(props: {
 				)}
 				{!modeObj.custom && (
 					<MicroTrailList
-						trails={state.trails ? state.trails : trails}
+						trails={state ? state.displayedTrails : trails}
 						listFunction={moveMap}
 						admin={user?.admin || false}
 						user={user}

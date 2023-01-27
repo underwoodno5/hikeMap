@@ -8,7 +8,7 @@ export default function Menu(props: { transition: Function }) {
 			<menu>
 				<li>
 					<button className="light" onClick={() => props.transition("about")}>
-						here's a button
+						About
 					</button>
 				</li>
 				<li>
@@ -16,12 +16,20 @@ export default function Menu(props: { transition: Function }) {
 						className="light"
 						onClick={() => props.transition("traillist")}
 					>
-						here's a button
+						Full Trail List
 					</button>
 				</li>
 				<li>
 					<button className="light" onClick={() => props.transition("login")}>
-						here's a button
+						Account
+					</button>
+				</li>
+				<li>
+					<button
+						className="light"
+						onClick={() => props.transition("traillist")}
+					>
+						Map
 					</button>
 				</li>
 			</menu>

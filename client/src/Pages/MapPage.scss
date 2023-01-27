@@ -6,6 +6,7 @@
 	flex-direction: row;
 	.hide {
 		width: 0;
+		margin: 0;
 	}
 }
 
@@ -13,11 +14,11 @@
 	@include mixins.card;
 	width: 25%;
 	background-color: var(--blue-accent);
-	transition: width 0.2s ease-in-out;
+	transition: width 0.4s ease-in-out, margin 0.4s ease-in-out;
 	height: 80vh;
 	margin: 0 10px;
-	scroll-behavior: smooth;
-	overflow: scroll;
+	display: flex;
+	flex-direction: column;
 }
 
 .full-screen {

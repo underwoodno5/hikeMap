@@ -19,6 +19,11 @@
 		align-self: flex-start;
 		margin-left: 5%;
 	}
+	.selected {
+		background-color: blue;
+		border-radius: 5px;
+		border: solid 8px blue;
+	}
 	ul {
 		list-style-type: none;
 		width: 95%;

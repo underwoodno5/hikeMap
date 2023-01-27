@@ -11,7 +11,7 @@ export default function LoginPage({
 		<>
 			<Form
 				listItems={["Name", "Login"]}
-				title={"hello"}
+				title={"Login"}
 				submitText={["Login"]}
 				submitFunction={User.login}
 				throwError={errorFunction}

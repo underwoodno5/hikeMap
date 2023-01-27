@@ -56,6 +56,28 @@
 	}
 }
 
+@mixin height-animation-mixin($name, $from, $to) {
+	@keyframes #{$name} {
+		0% {
+			height: $from;
+		}
+		100% {
+			height: $to;
+		}
+	}
+}
+
+@mixin width-animation-mixin($name, $from, $to) {
+	@keyframes #{$name} {
+		0% {
+			width: $from;
+		}
+		100% {
+			width: $to;
+		}
+	}
+}
+
 @mixin center-flex {
 	display: flex;
 	justify-content: center;

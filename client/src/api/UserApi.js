@@ -69,7 +69,7 @@ exports.User = {
 			customTrailList: null,
 		};
 
-		if (!res.data.errors) {
+		if (!res.errors) {
 			const fetchedTrails = await this.User.getUserTrails();
 			myData.userTrailList = fetchedTrails.userTrailList;
 			myData.customTrailList = fetchedTrails.userCustomTrails;

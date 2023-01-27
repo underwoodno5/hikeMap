@@ -39,7 +39,6 @@ exports.Trails = {
 			.catch((err) => {
 				console.log(err);
 			});
-		console.log(res);
 		return res.data.getAllTrails;
 	},
 	addToTrailList: async (trails) => {
@@ -57,7 +56,6 @@ exports.Trails = {
 			.catch((err) => {
 				return err;
 			});
-		console.log(res);
 		return res;
 	},
 	addCustomUserTrail: async (

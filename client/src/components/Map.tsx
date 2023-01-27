@@ -42,7 +42,6 @@ export default function Map(props: MapProps) {
 	const [popupPosition, setPopupPosition] = useState<[number, number] | null>(
 		null
 	);
-
 	useEffect(() => {
 		//-- When a user selects a custom map this will clear the polyline;
 		if (clear === true) {
@@ -63,23 +62,52 @@ export default function Map(props: MapProps) {
 		});
 	}, [centre, trailPath, markerPosition]);
 
-	const distanceFunction = () => {
-		let distance = 0;
+	// useEffect(() => {
+	// 	var expandContainer = document.getElementsByClassName("expand")[0];
+	// 	var c = expandContainer as HTMLElement;
 
-		pinArray.forEach((latlng, i) => {
-			if (i === pinArray.length - 1) {
-				return;
-			} else {
-				let startPoint = L.latLng(latlng);
-				let endPoint = L.latLng(pinArray[i + 1]);
-				let sectionDistance = startPoint.distanceTo(endPoint);
-				distance = distance + sectionDistance;
-			}
-		});
-		return distance;
+	// 	if (expandContainer) {
+	// 		L.DomEvent.disableClickPropagation(c);
+	// 	}
+	// });
+
+	var expandContainer = document.getElementsByClassName("expand")[0];
+
+	useEffect(() => {
+		// -- This finds our expand div icon and turns it into a Leaflet DOM event. This lets us stop the click from propagating to the map
+		// and triggering map interaction. It's called in useEffect because otherwise extra eventlisteners would be created every time the map
+		// re-rendered (which is a lot).
+		if (expandContainer) {
+			var c = expandContainer as HTMLElement;
+
+			L.DomEvent.disableClickPropagation(c);
+		}
+	}, [expandContainer]);
+
+	//- Here we change the state that allows our map to resize on re-render, then we swap state the state in the map
+	// so it won't resize after each re-render.
+	const handleZoom = (e: any) => {
+		props.expandMap();
+		setFullScreen(!fullScreen);
 	};
 
 	useEffect(() => {
+		const distanceFunction = () => {
+			let distance = 0;
+
+			pinArray.forEach((latlng, i) => {
+				if (i === pinArray.length - 1) {
+					return;
+				} else {
+					let startPoint = L.latLng(latlng);
+					let endPoint = L.latLng(pinArray[i + 1]);
+					let sectionDistance = startPoint.distanceTo(endPoint);
+					distance = distance + sectionDistance;
+				}
+			});
+			return distance;
+		};
+
 		localStorage.setItem(
 			"customMapPath",
 			JSON.stringify({
@@ -120,35 +148,25 @@ export default function Map(props: MapProps) {
 			},
 			keydown: (e) => {
 				if (e.originalEvent.code === "Escape") {
+					console.log(e);
 					if (fullScreen === true) {
 						setFullScreen(false);
 						props.expandMap();
 						setTimeout(() => {
 							map.invalidateSize();
-						}, 400);
+						}, 700);
 					}
 				}
 			},
 		});
 
-		//-- This finds our expand div and turns it into a Leaflet DOM event. This lets us stop the click from propagating to the map
-		//and triggering map interaction.
-		var expandContainer = document.getElementsByClassName("expand")[0];
-
-		if (expandContainer) {
-			var c = expandContainer as HTMLElement;
-			L.DomEvent.addListener(c, "click", (e) => {
-				//--Our expand function has a little hack in it. Resising the container window doesn't cause a re-draw of the map, so we need to use
-				// *invalidateSize()* to have the map re-evaluate the container. It needs to wait until the container size has changed, hence the
-				//delay.
-
-				setFullScreen(!fullScreen);
-				props.expandMap();
-				setTimeout(() => {
-					map.invalidateSize();
-				}, 400);
-				e.stopPropagation();
-			});
+		//--Our expand function has a little hack in it. Resising the container window doesn't cause a re-draw of the map, so we need to use
+		// *invalidateSize()* to have the map re-evaluate the container. It needs to wait until the container size has changed, hence the
+		//delay.
+		if (fullScreen) {
+			setTimeout(() => {
+				map.invalidateSize();
+			}, 400);
 		}
 
 		map.panTo(mapPositions.centre);
@@ -191,31 +209,27 @@ export default function Map(props: MapProps) {
 		html: renderToStaticMarkup(<i className="las la-tint map-icon water" />),
 	});
 
-	//-- Style variable for the map, changes on fullsceen
-
 	return (
-		<div className={`map-container-box ${fullScreen && "grow"}`}>
+		<div className={`map-container-box ${fullScreen && "shift-map"}`}>
 			<MapContainer
-				style={{ height: "100vh", width: "100%" }}
+				style={{ height: "100%", width: "100%" }}
 				center={centre}
 				zoom={20}
-				scrollWheelZoom={false}
+				scrollWheelZoom={true}
 			>
 				<ThisMap />
 				<div className="leaflet-top leaflet-right">
-					<div className="leaflet-control leaflet-bar expand">
+					<div
+						className="leaflet-control leaflet-bar expand"
+						onClick={(e) => handleZoom(e)}
+					>
 						<i className="las la-expand"></i>
 					</div>
 				</div>
-
 				<TileLayer url={mapAPI} />
 
 				{popupPosition && (
-					<Popup
-						position={popupPosition}
-						interactive={false}
-						eventHandlers={{}}
-					>
+					<Popup position={popupPosition} interactive={false}>
 						<button onClick={(e) => addTent(e)}>Add tent marker</button>
 						<button onClick={(e) => addWater(e)}>Add water marker</button>
 					</Popup>

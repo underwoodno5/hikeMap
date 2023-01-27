@@ -63,7 +63,7 @@ export default function TrailList(props: TrailListProps) {
 	};
 
 	const addTrailToList = async (e: any) => {
-		//We filter through the trails to find which ones are checked
+		//--We filter through the trails to find which ones are checked
 		//add pass them to the trail IDS to the API to save in the users trailList
 		const selectedTrails = trails.filter((element, i) => {
 			return checked[i] === true;

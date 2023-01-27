@@ -58,7 +58,7 @@ function App() {
 			const response = await Promise.all([User.me(), Trails.getAll()]);
 			setAppData({
 				user: response[0].me,
-				allTrails: response[1] || null,
+				allTrails: response[1],
 				userTrails: response[0].userTrailList,
 				userCustomTrails: response[0].customTrailList,
 			});

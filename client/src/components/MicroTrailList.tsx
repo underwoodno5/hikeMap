@@ -66,7 +66,8 @@ export default function MicroTrailList(props: {
 				trails[scrolledItem].trailPath
 			);
 		}
-	}, []);
+	}, [listFunction, scrolledItem, state, trails]);
+
 	const clickTrail = (
 		startLat: number,
 		startLong: number,
@@ -89,6 +90,7 @@ export default function MicroTrailList(props: {
 
 	const trailClick = (x: any) => {
 		setDisplayedTrails(x);
+		setIsExpanded(-1);
 	};
 
 	return (
