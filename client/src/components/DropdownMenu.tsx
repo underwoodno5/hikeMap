@@ -25,10 +25,7 @@ export default function Menu(props: { transition: Function }) {
 					</button>
 				</li>
 				<li>
-					<button
-						className="light"
-						onClick={() => props.transition("traillist")}
-					>
+					<button className="light" onClick={() => props.transition("map")}>
 						Map
 					</button>
 				</li>

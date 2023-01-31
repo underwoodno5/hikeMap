@@ -1,6 +1,7 @@
 import React, { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { Trails } from "../api/TrailsApi";
+import { Trail, Me, AppData } from "../types/interface";
 import "./TrailList.scss";
 
 interface TrailListProps {
@@ -8,26 +9,7 @@ interface TrailListProps {
 	me: Me | null;
 	myTrails?: Trail[];
 	throwError: Function;
-	appData: {
-		user: Me | null;
-		allTrails: Trail[] | null;
-		userTrails: Trail[] | null;
-		userCustomTrails: Trail[] | null;
-	};
-}
-
-interface Me {
-	_id: number;
-	name: string;
-}
-
-interface Trail {
-	_id: number;
-	name: string;
-	startLat: number;
-	startLong: number;
-	trailPath: [number, number][];
-	distance: number;
+	appData: AppData;
 }
 
 export default function TrailList(props: TrailListProps) {
@@ -53,7 +35,7 @@ export default function TrailList(props: TrailListProps) {
 
 		setChecked(
 			checked.map((c, i) => {
-				if (i == trailIndex) {
+				if (i === trailIndex) {
 					return !c;
 				} else {
 					return c;
@@ -112,7 +94,6 @@ export default function TrailList(props: TrailListProps) {
 			<ul>
 				{displayedTrails.map((trailObject, i) => {
 					return (
-						// <Link to="/map" state={{ clickedIndex: i }} key={i}>
 						<li
 							className={matchArray[i]}
 							key={i}

@@ -2,9 +2,6 @@ import React, { useState } from "react";
 import "./Search.scss";
 import { Link } from "react-router-dom";
 
-interface Trails {
-	name: String;
-}
 export default function Search() {
 	const [sortedArray, setSortedArray] = useState<object[]>([]);
 

@@ -6,38 +6,16 @@ import LandingPage from "./pages/LandingPage";
 import Layout from "./pages/Layout";
 import UserPage from "./pages/UserPage";
 import About from "./pages/About";
-
 import { Trails } from "./api/TrailsApi";
 import { User } from "./api/UserApi";
+
+import { AppData } from "./types/interface";
 
 import "./_mixins.scss";
 import "./App.scss";
 import "./_variables.scss";
 import LoginPage from "./pages/LoginPage";
 import MapPage from "./pages/MapPage";
-
-interface Me {
-	_id: number;
-	name: string;
-	admin: boolean;
-}
-
-interface Trail {
-	_id: number;
-	name: string;
-	startLat: number;
-	startLong: number;
-	trailPath: [number, number][];
-	createdby?: number;
-	distance: number;
-}
-
-interface AppData {
-	user: Me | null;
-	allTrails: Trail[] | null;
-	userTrails: Trail[] | null;
-	userCustomTrails: Trail[] | null;
-}
 
 function App() {
 	const [appData, setAppData] = useState<AppData>({

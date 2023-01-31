@@ -13,6 +13,8 @@ const Trail = mongoose.model("Trail", {
 	startLong: Number,
 	trailPath: [[Number]],
 	distance: Number,
+	tentPoints: [[Number]],
+	waterPoints: [[Number]],
 });
 
 const UserTrail = mongoose.model("UserTrail", {
@@ -22,6 +24,8 @@ const UserTrail = mongoose.model("UserTrail", {
 	startLong: Number,
 	trailPath: [[Number]],
 	distance: Number,
+	tentPoints: [[Number]],
+	waterPoints: [[Number]],
 });
 
 const User = mongoose.model("User", {
@@ -291,6 +295,7 @@ exports.roots = {
 		}
 		const userId = context.req.user.id;
 		const user = await User.findOne({ userId });
+		console.log(tentPoints);
 
 		const userTrail = new UserTrail({
 			_id: new mongoose.Types.ObjectId(),
@@ -303,7 +308,11 @@ exports.roots = {
 			waterPoints,
 			tentPoints,
 		});
+
+		console.log(userTrail.waterPoints);
+
 		user.userTrails.push(userTrail._id);
+
 		await user.save();
 		await userTrail.save();
 

@@ -1,5 +1,5 @@
-import React, { useEffect, useState } from "react";
-import { Outlet, useNavigate, useLocation } from "react-router";
+import React, { useState } from "react";
+import { Outlet, useNavigate } from "react-router";
 
 import TopBar from "../components/TopBar";
 import ErrorMsg from "../components/ErrorMsg";
@@ -11,10 +11,11 @@ interface LayoutProps {
 
 export default function Layout(props: LayoutProps) {
 	const { error, errorFunction } = props;
-	const location = useLocation();
+	let changePage = false;
 	const [pageAnimation, setPageAnimation] = useState("");
 	const [pageTransition, setPageTransition] = useState(false);
 	const [pageDisplay, setPageDisplay] = useState("");
+
 	const navigate = useNavigate();
 
 	//-- This is our navigation animation function. From the menu buttons we fire off transition with the intended page url,
@@ -30,8 +31,10 @@ export default function Layout(props: LayoutProps) {
 	const redirect = async () => {
 		if (pageTransition) {
 			setPageTransition(false);
-			navigate(pageDisplay);
+			//-- This state allows us to check if the page has been navigated (if we need to)
+			navigate(pageDisplay, { state: { navigated: true } });
 			setPageAnimation("slide-up");
+			changePage = true;
 		}
 	};
 	return (
@@ -45,7 +48,7 @@ export default function Layout(props: LayoutProps) {
 				className={`main-container ${pageAnimation}`}
 				onAnimationEnd={redirect}
 			>
-				<Outlet />
+				<Outlet context={changePage} />
 			</div>
 		</div>
 	);

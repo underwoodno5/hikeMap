@@ -1,72 +1,34 @@
 import React, { useState, useRef, useEffect } from "react";
-import { useLocation } from "react-router";
 import "./MicroTrailList.scss";
-
-interface Me {
-	_id: number;
-	name: string;
-}
-
-interface Trail {
-	_id: number;
-	name: string;
-	startLat: number;
-	startLong: number;
-	trailPath: [number, number][];
-	distance: number;
-}
+import { Trail, Me, AppData } from "../types/interface";
 
 export default function MicroTrailList(props: {
-	trails: {
-		_id: number;
-		name: string;
-		startLat: number;
-		startLong: number;
-		trailPath: [number, number][];
-		createdby?: number;
-	}[];
-	listFunction: Function;
+	trails: Trail[];
+	moveMap: Function;
 	admin: boolean;
 	swapSideBar: Function;
-	user: {
-		_id: number;
-		name: string;
-		admin: boolean;
-	} | null;
-	appData: {
-		user: Me | null;
-		allTrails: Trail[] | null;
-		userTrails: Trail[] | null;
-		userCustomTrails: Trail[] | null;
-	};
+	user: Me | null;
+	appData: AppData;
+	clickedTrail: number;
 }) {
-	const [isExpanded, setIsExpanded] = useState(-1);
-	const { state } = useLocation();
 	const scrollRef = useRef<HTMLLIElement>(null);
-	const { trails, listFunction, admin, swapSideBar } = props;
+	const { trails, moveMap, admin, swapSideBar, clickedTrail } = props;
 	const { allTrails, userTrails, userCustomTrails, user } = props.appData;
-	let scrolledItem = 0;
 	let selectedTrails = trails;
+	const [isExpanded, setIsExpanded] = useState(clickedTrail);
 
-	//-- If we're coming from the /traillist page we use the states set in our navigate at the start.
-	if (state) {
-		scrolledItem = state.clickedIndex;
-		selectedTrails = state.displayedTrails;
-	}
-
-	const [displayedTrails, setDisplayedTrails] = useState(selectedTrails);
+	const [displayedTrails, setDisplayedTrails] = useState({
+		trails: selectedTrails,
+		displayed: true,
+	});
 
 	useEffect(() => {
-		if (scrollRef.current != null && state) {
+		//-- this keeps it from scrolling if the page is loaded without selecting a
+		if (scrollRef.current && isExpanded !== 0) {
+			console.log("fast");
 			scrollRef.current.scrollIntoView();
-			setIsExpanded(scrolledItem);
-			listFunction(
-				trails[scrolledItem].startLat,
-				trails[scrolledItem].startLong,
-				trails[scrolledItem].trailPath
-			);
 		}
-	}, [listFunction, scrolledItem, state, trails]);
+	}, [isExpanded]);
 
 	const clickTrail = (
 		startLat: number,
@@ -75,7 +37,7 @@ export default function MicroTrailList(props: {
 		i: number
 	) => {
 		console.log("click trail");
-		listFunction(startLat, startLong, trailPath);
+		moveMap(startLat, startLong, trailPath);
 		if (i === isExpanded) {
 			setIsExpanded(-1);
 		} else {
@@ -89,8 +51,7 @@ export default function MicroTrailList(props: {
 	};
 
 	const trailClick = (x: any) => {
-		setDisplayedTrails(x);
-		setIsExpanded(-1);
+		setDisplayedTrails({ trails: x, displayed: false });
 	};
 
 	return (
@@ -105,10 +66,10 @@ export default function MicroTrailList(props: {
 				)}
 			</div>
 			<ul>
-				{displayedTrails.map((trailObject, i) => {
+				{displayedTrails.trails.map((trailObject, i) => {
 					return (
 						<li
-							ref={i === scrolledItem ? scrollRef : null}
+							ref={i === isExpanded ? scrollRef : null}
 							key={i}
 							onClick={(e) =>
 								clickTrail(
@@ -120,16 +81,20 @@ export default function MicroTrailList(props: {
 							}
 						>
 							<h4>{trailObject.name}</h4>
-							{isExpanded === i && user && (
-								<div className="trail-list-expansion">
-									{admin && (
-										<button onClick={(e) => sideBarClick(e)}>
-											Create custom trail
-										</button>
-									)}
-									{trailObject.createdby && <button>customTrailButton</button>}
-								</div>
-							)}
+							{isExpanded === i &&
+								displayedTrails.displayed === true &&
+								user && (
+									<div className="trail-list-expansion">
+										{admin && (
+											<button onClick={(e) => sideBarClick(e)}>
+												Create custom trail
+											</button>
+										)}
+										{trailObject.createdby && (
+											<button>customTrailButton</button>
+										)}
+									</div>
+								)}
 						</li>
 					);
 				})}

@@ -62,15 +62,6 @@ export default function Map(props: MapProps) {
 		});
 	}, [centre, trailPath, markerPosition]);
 
-	// useEffect(() => {
-	// 	var expandContainer = document.getElementsByClassName("expand")[0];
-	// 	var c = expandContainer as HTMLElement;
-
-	// 	if (expandContainer) {
-	// 		L.DomEvent.disableClickPropagation(c);
-	// 	}
-	// });
-
 	var expandContainer = document.getElementsByClassName("expand")[0];
 
 	useEffect(() => {

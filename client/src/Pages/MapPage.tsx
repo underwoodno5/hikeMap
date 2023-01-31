@@ -4,54 +4,31 @@ import Map from "../components/Map";
 import MicroTrailList from "../components/MicroTrailList";
 import CustomMapCreation from "../components/CustomMapCreation";
 import "./MapPage.scss";
-
-interface Me {
-	_id: number;
-	name: string;
-}
-
-interface Trail {
-	_id: number;
-	name: string;
-	startLat: number;
-	startLong: number;
-	trailPath: [number, number][];
-	distance: number;
-}
+import { Trail, Me, AppData } from "../types/interface";
 
 export default function MapPage(props: {
-	trails: {
-		_id: number;
-		name: string;
-		startLat: number;
-		startLong: number;
-		trailPath: [number, number][];
-		createdby?: number;
-	}[];
+	trails: Trail[];
 	throwError: Function;
-	user: {
-		_id: number;
-		name: string;
-		admin: boolean;
-	} | null;
-	appData: {
-		user: Me | null;
-		allTrails: Trail[] | null;
-		userTrails: Trail[] | null;
-		userCustomTrails: Trail[] | null;
-	};
+	user: Me | null;
+	appData: AppData;
 }) {
 	const { trails, user } = props;
 	const { state } = useLocation();
+
+	//--This data is either taken from the state sent by clicking on a trail in Full Trail List or from
+	let initialTrail =
+		state?.displayedTrails?.[state.clickedIndex] || props.trails[0];
+	let clickedIndex = state.clickedIndex || 0;
+	let displayedTrails = state.displayedTrails || trails;
 
 	const [mapPositions, setmapPositions] = useState<{
 		centre: [number, number];
 		markerPosition: [number, number];
 		trailPath: [number, number][];
 	}>({
-		centre: [props.trails[0].startLat, props.trails[0].startLong],
-		markerPosition: [props.trails[0].startLat, props.trails[0].startLong],
-		trailPath: props.trails[0].trailPath,
+		centre: [initialTrail.startLat, initialTrail.startLong],
+		markerPosition: [initialTrail.startLat, initialTrail.startLong],
+		trailPath: initialTrail.trailPath,
 	});
 
 	const [modeObj, setModeObj] = useState<{ clear: boolean; custom: boolean }>({
@@ -74,16 +51,12 @@ export default function MapPage(props: {
 		setModeObj({ clear: !modeObj.clear, custom: modeObj.custom });
 	};
 	const swapSideBar = () => {
-		console.log("click");
 		setModeObj({ clear: modeObj.clear, custom: !modeObj.custom });
 	};
 
 	const expandMap = (x: boolean) => {
 		setHideSideBar(!hideSideBar);
 	};
-
-	console.log(state);
-
 	return (
 		<div className={`map-page-container`}>
 			<Map
@@ -104,8 +77,9 @@ export default function MapPage(props: {
 				)}
 				{!modeObj.custom && (
 					<MicroTrailList
-						trails={state ? state.displayedTrails : trails}
-						listFunction={moveMap}
+						trails={displayedTrails}
+						clickedTrail={clickedIndex}
+						moveMap={moveMap}
 						admin={user?.admin || false}
 						user={user}
 						swapSideBar={swapSideBar}
