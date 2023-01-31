@@ -4,6 +4,8 @@ export interface Trail {
 	startLat: number;
 	startLong: number;
 	trailPath: [number, number][];
+	tentPoints?:[number,number][];
+	waterPoints?:[number,number][];
 	distance: number;
 	createdby?: number;
 }

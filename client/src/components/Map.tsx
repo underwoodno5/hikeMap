@@ -18,6 +18,8 @@ interface MapProps {
 	centre: [number, number];
 	markerPosition: [number, number];
 	trailPath: [number, number][];
+	tentArray: [number, number][];
+	waterArray: [number, number][];
 	clear: boolean;
 	clearMap: Function;
 	expandMap: Function;
@@ -37,8 +39,12 @@ export default function Map(props: MapProps) {
 		trailPath: trailPath,
 	});
 	let pinDragArray: [number, number][] = [];
-	const [tentArray, setTentArray] = useState<[number, number][]>([]);
-	const [waterArray, setWaterArray] = useState<[number, number][]>([]);
+	const [tentArray, setTentArray] = useState<[number, number][]>(
+		props.tentArray
+	);
+	const [waterArray, setWaterArray] = useState<[number, number][]>(
+		props.waterArray
+	);
 	const [popupPosition, setPopupPosition] = useState<[number, number] | null>(
 		null
 	);
@@ -139,7 +145,6 @@ export default function Map(props: MapProps) {
 			},
 			keydown: (e) => {
 				if (e.originalEvent.code === "Escape") {
-					console.log(e);
 					if (fullScreen === true) {
 						setFullScreen(false);
 						props.expandMap();

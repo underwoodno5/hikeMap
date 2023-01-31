@@ -5,10 +5,11 @@
 	width: 100%;
 	display: flex;
 	flex-direction: row;
-	// .hide {
-	// 	animation: width-animation-mixin 0.4s ease-in-out;
-	// 	margin: 0;
-	// }
+
+	.hide {
+		width: 0px;
+		margin: 0;
+	}
 }
 
 .side-bar-container {
@@ -19,6 +20,7 @@
 	margin: 0 10px;
 	display: flex;
 	flex-direction: column;
+	transition: width 0.4s ease-in-out;
 }
 
 .full-screen {

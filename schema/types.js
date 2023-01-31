@@ -53,13 +53,15 @@ type UserTrail{
     startLat: String!
     startLong: String!
 	trailPath: [[Float]]!
+	waterPoints: [[Float]]
+	tentPoints:[[Float]]
 	distance: Float
 	_id: String
 }
 
 type UserTrailList{
 	userTrailList: [Trail]
-	userCustomTrails:[Trail]
+	userCustomTrails:[UserTrail]
 
 }
 

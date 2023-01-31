@@ -95,6 +95,8 @@ exports.User = {
 						startLat
 						startLong
 						distance
+						waterPoints
+						tentPoints
 					}
 						
 			   }

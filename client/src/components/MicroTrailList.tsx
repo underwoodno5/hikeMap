@@ -16,6 +16,7 @@ export default function MicroTrailList(props: {
 	const { allTrails, userTrails, userCustomTrails, user } = props.appData;
 	let selectedTrails = trails;
 	const [isExpanded, setIsExpanded] = useState(clickedTrail);
+	console.log(admin);
 
 	const [displayedTrails, setDisplayedTrails] = useState({
 		trails: selectedTrails,
@@ -34,10 +35,12 @@ export default function MicroTrailList(props: {
 		startLat: number,
 		startLong: number,
 		trailPath: [number, number][],
-		i: number
+		i: number,
+		waterPoints?: [number, number][],
+		tentPoints?: [number, number][]
 	) => {
-		console.log("click trail");
-		moveMap(startLat, startLong, trailPath);
+		setDisplayedTrails({ ...displayedTrails, displayed: true });
+		moveMap(startLat, startLong, trailPath, waterPoints, tentPoints);
 		if (i === isExpanded) {
 			setIsExpanded(-1);
 		} else {
@@ -76,7 +79,9 @@ export default function MicroTrailList(props: {
 									trailObject.startLat,
 									trailObject.startLong,
 									trailObject.trailPath,
-									i
+									i,
+									trailObject.waterPoints,
+									trailObject.tentPoints
 								)
 							}
 						>

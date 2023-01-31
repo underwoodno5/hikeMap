@@ -295,7 +295,6 @@ exports.roots = {
 		}
 		const userId = context.req.user.id;
 		const user = await User.findOne({ userId });
-		console.log(tentPoints);
 
 		const userTrail = new UserTrail({
 			_id: new mongoose.Types.ObjectId(),
