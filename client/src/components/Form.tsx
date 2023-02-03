@@ -10,8 +10,8 @@ interface FormList {
 }
 
 export default function Form(props: FormList) {
-	//We take the listItems array from props, create input for each,
-	//and store inputs from those in formInfo
+	//--We take the listItems array from props, create input for each,
+	//  and store inputs from those in formInfo
 
 	let { listItems, title, submitText } = props;
 	const valueObj: { [k: string]: any } = {};
@@ -19,7 +19,7 @@ export default function Form(props: FormList) {
 	const [formInfo, setFormInfo] = useState({ ...valueObj });
 
 	const handleFormSubmit = async (event: any) => {
-		//we breakdown the inputs on submit and send them into the submitfunction from props
+		//--We breakdown the inputs on submit and send them into the submitfunction from props
 		event.preventDefault();
 		let values = Object.values(formInfo);
 		const res = await props.submitFunction(...values);

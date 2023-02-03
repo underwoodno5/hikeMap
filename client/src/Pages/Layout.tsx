@@ -3,6 +3,8 @@ import { Outlet, useNavigate } from "react-router";
 
 import TopBar from "../components/TopBar";
 import ErrorMsg from "../components/ErrorMsg";
+import { Trail } from "../types/interface";
+import "./Layout.scss";
 
 interface LayoutProps {
 	error?: String;
@@ -11,7 +13,6 @@ interface LayoutProps {
 
 export default function Layout(props: LayoutProps) {
 	const { error, errorFunction } = props;
-	let changePage = false;
 	const [pageAnimation, setPageAnimation] = useState("");
 	const [pageTransition, setPageTransition] = useState(false);
 	const [pageDisplay, setPageDisplay] = useState("");
@@ -28,13 +29,27 @@ export default function Layout(props: LayoutProps) {
 		setPageDisplay(x);
 	};
 
+	const childNavigation = async (
+		page: string,
+		clickedIndex?: number,
+		displayedTrails?: Trail[]
+	) => {
+		navigate(page, {
+			state: {
+				navigated: true,
+				clickedIndex: clickedIndex,
+				displayedTrails: displayedTrails,
+			},
+		});
+		setPageAnimation("slide-page-up");
+	};
+
 	const redirect = async () => {
 		if (pageTransition) {
 			setPageTransition(false);
 			//-- This state allows us to check if the page has been navigated (if we need to)
 			navigate(pageDisplay, { state: { navigated: true } });
-			setPageAnimation("slide-up");
-			changePage = true;
+			setPageAnimation("slide-page-up");
 		}
 	};
 	return (
@@ -48,7 +63,13 @@ export default function Layout(props: LayoutProps) {
 				className={`main-container ${pageAnimation}`}
 				onAnimationEnd={redirect}
 			>
-				<Outlet context={changePage} />
+				<Outlet
+					context={(
+						page: string,
+						clickedIndex?: number,
+						displayedTrails?: Trail[]
+					) => childNavigation(page, clickedIndex, displayedTrails)}
+				/>
 			</div>
 		</div>
 	);

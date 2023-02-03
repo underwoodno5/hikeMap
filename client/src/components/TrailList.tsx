@@ -15,6 +15,7 @@ interface TrailListProps {
 export default function TrailList(props: TrailListProps) {
 	const { allTrails, userTrails, userCustomTrails } = props.appData;
 	const { trails, myTrails, throwError } = props;
+
 	const navigate = useNavigate();
 
 	const [displayedTrails, setDisplayedTrails] = useState(trails);

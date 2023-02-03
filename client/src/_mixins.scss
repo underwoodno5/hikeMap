@@ -1,10 +1,18 @@
+//----- Layout -----\\
 @mixin card {
 	box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
 	border-radius: 5px;
 	margin: 10px;
 }
 
-// Animations
+@mixin center-flex {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	align-content: center;
+}
+
+//----- Animations -----\\
 
 @mixin animation-mixin($name, $from, $to) {
 	@keyframes #{$name} {
@@ -78,26 +86,11 @@
 	}
 }
 
-@mixin center-flex {
-	display: flex;
-	justify-content: center;
-	align-items: center;
-	align-content: center;
-}
-
 @include opacity-animation-mixin(opacity-animation, 0, 1);
 @include animation-mixin(slide-out, 0, 110%);
 @include vertical-animation-mixin(slide-up, 50%, 0, -2%);
 
-.slide-up-fade-in {
-	animation: slide-up 0.5s cubic-bezier(0.39, 0.575, 0.565, 1) both,
-		fade-in 0.8s cubic-bezier(0.39, 0.575, 0.565, 1) both;
-}
-.slide-out {
-	animation: slide-out 0.8s ease-out forwards;
-}
-
-//Media-queries
+//----- Media-Queries -----\\
 
 @mixin for-phone-only {
 	@media (max-width: 599px) {

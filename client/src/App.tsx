@@ -8,6 +8,7 @@ import UserPage from "./pages/UserPage";
 import About from "./pages/About";
 import { Trails } from "./api/TrailsApi";
 import { User } from "./api/UserApi";
+import NewLanding from "./pages/NewLandingPage";
 
 import { AppData } from "./types/interface";
 
@@ -86,6 +87,8 @@ function App() {
 							}
 						/>
 						<Route path="about" element={<About />} />
+						<Route path="newlanding" element={<NewLanding />} />
+
 						{appData.allTrails && (
 							<Route
 								path="map"

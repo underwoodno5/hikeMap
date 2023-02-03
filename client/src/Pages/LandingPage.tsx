@@ -1,10 +1,10 @@
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import "./LandingPage.scss";
 import logo from "../images/logo.svg";
-import { useNavigate } from "react-router";
+import { useNavigate, useOutletContext } from "react-router";
 
 export default function LandingPage() {
-	const navigate = useNavigate();
+	const childNavigate = useOutletContext<Function>();
 
 	const [animateClass, setAnimateClass] = useState({
 		slideDown: "",
@@ -17,11 +17,13 @@ export default function LandingPage() {
 		});
 	};
 
+	const childNavigation = () => {};
+
 	return (
 		<div className="landing-container">
 			<div
 				className={`top-box ${animateClass.slideUp}`}
-				onAnimationEnd={() => navigate("trailList")}
+				onAnimationEnd={() => childNavigate("traillist")}
 			>
 				<h1>Intranet application for data collection</h1>
 				<div className="diffuse-container">
