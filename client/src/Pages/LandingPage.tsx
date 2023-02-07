@@ -1,7 +1,7 @@
-import React, { useContext, useEffect, useState } from "react";
+import React, { useState } from "react";
 import "./LandingPage.scss";
 import logo from "../images/logo.svg";
-import { useNavigate, useOutletContext } from "react-router";
+import { useOutletContext } from "react-router";
 
 export default function LandingPage() {
 	const childNavigate = useOutletContext<Function>();
@@ -17,8 +17,6 @@ export default function LandingPage() {
 		});
 	};
 
-	const childNavigation = () => {};
-
 	return (
 		<div className="landing-container">
 			<div
@@ -33,7 +31,7 @@ export default function LandingPage() {
 			<div className={`bottom-box ${animateClass.slideDown}`}>
 				<div className="logo">
 					<div className="logo-bubble pulse" onClick={leaveLanding}>
-						<img src={logo} alt="SVG as an image" />
+						<img src={logo} alt="SVG" />
 					</div>
 				</div>
 			</div>

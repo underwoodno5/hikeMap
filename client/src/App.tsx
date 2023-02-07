@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 
 import TrailList from "./components/TrailList";
-import LandingPage from "./pages/LandingPage";
+// import LandingPage from "./pages/LandingPage";
 import Layout from "./pages/Layout";
 import UserPage from "./pages/UserPage";
 import About from "./pages/About";
@@ -35,6 +35,7 @@ function App() {
 
 		const fetchData = async () => {
 			const response = await Promise.all([User.me(), Trails.getAll()]);
+			User.location();
 			setAppData({
 				user: response[0].me,
 				allTrails: response[1],
@@ -62,7 +63,7 @@ function App() {
 						path="/"
 						element={<Layout error={error} errorFunction={errorFunction} />}
 					>
-						<Route path="/" element={<LandingPage />} />
+						<Route path="/" element={<NewLanding />} />
 						{appData.allTrails && (
 							<Route
 								path="traillist"

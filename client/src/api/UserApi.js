@@ -1,4 +1,6 @@
-const endpoint = "http://localhost:5000/graphql";
+// const endpoint = "http://localhost:5000/graphql";
+const endpoint = "http://192.168.2.14:5000/graphql";
+
 const headers = {
 	"content-type": "application/json",
 };
@@ -111,6 +113,18 @@ exports.User = {
 			return res.error;
 		} else {
 			return res.data.getMyTrailList;
+		}
+	},
+	location: async () => {
+		if ("geolocation" in navigator) {
+			const pos = await new Promise((resolve, reject) => {
+				navigator.geolocation.getCurrentPosition(resolve, reject);
+			});
+
+			return await pos;
+		} else {
+			console.log("none");
+			throw new Error("Geolocation not allowed in settings or in browser");
 		}
 	},
 };

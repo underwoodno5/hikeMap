@@ -1,5 +1,4 @@
 import { useState } from "react";
-import ErrorMsg from "./ErrorMsg";
 
 interface FormList {
 	listItems: Array<string>;

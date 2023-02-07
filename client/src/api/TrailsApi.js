@@ -1,4 +1,5 @@
-const endpoint = "http://localhost:5000/graphql";
+// const endpoint = "http://localhost:5000/graphql";
+const endpoint = "http://192.168.2.14:5000/graphql";
 const headers = {
 	"content-type": "application/json",
 };

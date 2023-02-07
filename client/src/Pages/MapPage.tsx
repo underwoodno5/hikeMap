@@ -5,6 +5,7 @@ import MicroTrailList from "../components/MicroTrailList";
 import CustomMapCreation from "../components/CustomMapCreation";
 import "./MapPage.scss";
 import { Trail, Me, AppData } from "../types/interface";
+import { User } from "../api/UserApi";
 
 export default function MapPage(props: {
 	trails: Trail[];
@@ -19,8 +20,8 @@ export default function MapPage(props: {
 	//first entry in the list of trails taken from the db
 	let initialTrail =
 		state?.displayedTrails?.[state.clickedIndex] || props.trails[0];
-	let clickedIndex = state.clickedIndex || 0;
-	let displayedTrails = state.displayedTrails || trails;
+	let clickedIndex = state?.clickedIndex || 0;
+	let displayedTrails = state?.displayedTrails || trails;
 
 	const [mapPositions, setmapPositions] = useState<{
 		centre: [number, number];

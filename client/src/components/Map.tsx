@@ -29,6 +29,7 @@ export default function Map(props: MapProps) {
 	const mapAPI = "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png";
 	const { markerPosition, trailPath, centre, clear, clearMap } = props;
 	const [fullScreen, setFullScreen] = useState(false);
+
 	const [mapPositions, setMapPositions] = useState<{
 		centre: [number, number];
 		markerPosition: [number, number];
@@ -182,7 +183,6 @@ export default function Map(props: MapProps) {
 	};
 	const addWater = async (e: any) => {
 		e.stopPropagation();
-		console.log(e);
 
 		if (waterArray && popupPosition) {
 			setWaterArray((current) => [...current, popupPosition]);

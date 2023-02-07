@@ -1,7 +1,6 @@
 import React, { useContext, useEffect, useState } from "react";
 import "./LandingPage.scss";
 import logo from "../images/logo.svg";
-import { useNavigate, useOutletContext } from "react-router";
 
 import "./LandingPage.scss";
 
