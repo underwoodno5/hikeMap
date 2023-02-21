@@ -38,6 +38,8 @@ export default function MapPage(props: {
 		tentPoints: initialTrail.tentPoints || null,
 	});
 
+	const [trailObject, setTrailObject] = useState<Trail>(initialTrail);
+
 	const [modeObj, setModeObj] = useState<{ clear: boolean; custom: boolean }>({
 		clear: false,
 		custom: false,
@@ -45,23 +47,19 @@ export default function MapPage(props: {
 	const [hideSideBar, setHideSideBar] = useState(false);
 	const [mobileHide, setMobileHide] = useState(false);
 
-	const moveMap = (
-		x: number,
-		y: number,
-		z: [number, number][],
-		a: [number, number][],
-		b: [number, number][]
-	) => {
-		setmapPositions({
-			centre: [x, y],
-			markerPosition: [x, y],
-			trailPath: z,
-			waterPoints: a,
-			tentPoints: b,
-		});
+	const moveMap = (c: Trail) => {
+		setTrailObject(c);
+		console.log(c);
 		if (hideSideBar === true) {
 			setHideSideBar(false);
 		}
+		// setmapPositions({
+		// 	centre: [x, y],
+		// 	markerPosition: [x, y],
+		// 	trailPath: z,
+		// 	waterPoints: a,
+		// 	tentPoints: b,
+		// });
 	};
 
 	//--This function is called from the microtraillist, the map watches for this boolean change
@@ -89,16 +87,12 @@ export default function MapPage(props: {
 				onClick={() => expandMapMobile()}
 			></i>
 			<Map
-				centre={mapPositions.centre}
-				markerPosition={mapPositions.markerPosition}
-				trailPath={mapPositions.trailPath}
 				clear={modeObj.clear}
 				clearMap={clearMap}
 				expandMap={(x: boolean) => expandMap()}
-				waterArray={mapPositions.waterPoints}
-				tentArray={mapPositions.tentPoints}
 				shrinkTopBar={() => shrinkTopBar()}
 				customize={modeObj.custom}
+				trailObject={trailObject}
 			/>
 			<div
 				className={`side-bar-container ${hideSideBar && "hide"}  ${

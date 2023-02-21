@@ -21,10 +21,13 @@
 		flex: 1 1 0px;
 		text-align: left;
 	}
+	.header {
+		padding: 5px;
+		transition: background-color 0.5s ease;
+	}
 	.selected {
-		background-color: blue;
-		border-radius: 5px;
-		border: solid 8px blue;
+		background-color: var(--card-background-hover);
+		border-radius: 8px;
 	}
 	ul {
 		list-style-type: none;

@@ -77,15 +77,30 @@ export default function TrailList(props: TrailListProps) {
 	return (
 		<div className="trail-list-container">
 			<div className="list-tab">
-				<h4 className="header" onClick={() => trailClick(allTrails)}>
+				<h4
+					className={`header ${
+						displayedTrails === allTrails ? "selected" : null
+					}`}
+					onClick={() => trailClick(allTrails)}
+				>
 					Trail List
 				</h4>
 				{props.me && (
 					<>
-						<h4 className="header" onClick={() => trailClick(userTrails)}>
+						<h4
+							className={`header ${
+								displayedTrails === userTrails ? "selected" : null
+							}`}
+							onClick={() => trailClick(userTrails)}
+						>
 							User List
 						</h4>
-						<h4 className="header" onClick={() => trailClick(userCustomTrails)}>
+						<h4
+							className={`header ${
+								displayedTrails === userCustomTrails ? "selected" : null
+							}`}
+							onClick={() => trailClick(userCustomTrails)}
+						>
 							Custom List
 						</h4>
 					</>

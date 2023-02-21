@@ -1,6 +1,7 @@
 import { divIcon, LatLngBounds } from "leaflet";
 import React, { useEffect, useState } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
+import { Trail } from "../types/interface";
 import * as L from "leaflet";
 
 import {
@@ -15,33 +16,26 @@ import {
 import "./Map.scss";
 
 interface MapProps {
-	centre: [number, number];
-	markerPosition: [number, number];
-	trailPath: [number, number][];
-	tentArray: [number, number][];
-	waterArray: [number, number][];
 	clear: boolean;
 	clearMap: Function;
 	expandMap: Function;
 	shrinkTopBar: Function;
 	customize: boolean;
+	trailObject: Trail;
 }
 
 export default function Map(props: MapProps) {
 	const mapAPI = "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png";
-	const { markerPosition, trailPath, centre, clear, clearMap, customize } =
-		props;
+	const { clear, clearMap, customize, trailObject } = props;
 	const [fullScreen, setFullScreen] = useState<boolean>(false);
 	const [location, setLocation] = useState<[number, number] | null>(null);
 
 	const [mapPositions, setMapPositions] = useState<{
 		centre: [number, number];
-		markerPosition: [number, number];
 		trailPath: [number, number][];
 	}>({
-		centre: centre,
-		markerPosition: markerPosition,
-		trailPath: trailPath,
+		centre: trailObject.trailPath[0],
+		trailPath: trailObject.trailPath,
 	});
 	let pinDragArray: [number, number][] = [];
 
@@ -50,16 +44,19 @@ export default function Map(props: MapProps) {
 	// line directly, it wouldn't redraw on trailPath change, even if we forced a map redraw with a general state change.
 	// The prop used in the polyline itself needs a state change to redraw that element. Trust me I tried it.
 	const [tentArray, setTentArray] = useState<[number, number][]>(
-		props.tentArray
+		trailObject.tentPoints || []
 	);
 	const [waterArray, setWaterArray] = useState<[number, number][]>(
-		props.waterArray
+		trailObject.waterPoints || []
 	);
+	console.log(waterArray);
 	const [popupPosition, setPopupPosition] = useState<[number, number] | null>(
 		null
 	);
 
-	const [pinArray, setPinArray] = useState<[number, number][]>(trailPath);
+	const [pinArray, setPinArray] = useState<[number, number][]>(
+		trailObject.trailPath
+	);
 
 	//-- Reset the popup to null when we change back and forth between customizing
 	if (customize === false && popupPosition !== null) {
@@ -70,13 +67,13 @@ export default function Map(props: MapProps) {
 	var customControlList = document.getElementsByClassName("custom-control");
 
 	useEffect(() => {
-		setPinArray(trailPath);
+		setPinArray(trailObject.trailPath);
+		setWaterArray(trailObject.waterPoints || []);
 		setMapPositions({
-			centre: centre,
-			markerPosition: markerPosition,
-			trailPath: trailPath,
+			centre: trailObject.trailPath[0],
+			trailPath: trailObject.trailPath,
 		});
-	}, [centre, trailPath, markerPosition]);
+	}, [trailObject]);
 
 	// -- This finds our expand div icon and turns it into a Leaflet DOM event. This lets us stop the click from propagating to the map
 	// and triggering map interaction. It's called in useEffect because otherwise extra eventlisteners would be created every time the map
@@ -136,12 +133,11 @@ export default function Map(props: MapProps) {
 	};
 
 	//-- Everytime the map arrays are modified we want to calculate the new distance of the path and
-	// save them localstorage. Then we can use that data when we make our API call to save the trail in the db.
+	// save them to localstorage. Then we can use that data when we make our API call to save the trail in the db.
 
-	useEffect(() => {
+	const saveToLocalStorage = () => {
 		const distanceFunction = () => {
 			let distance = 0;
-
 			pinArray.forEach((latlng, i) => {
 				if (i === pinArray.length - 1) {
 					return;
@@ -154,7 +150,6 @@ export default function Map(props: MapProps) {
 			});
 			return distance;
 		};
-
 		localStorage.setItem(
 			"customMapPath",
 			JSON.stringify({
@@ -164,7 +159,7 @@ export default function Map(props: MapProps) {
 				distance: distanceFunction(),
 			})
 		);
-	}, [pinArray, tentArray, waterArray]);
+	};
 
 	const ThisMap = () => {
 		//----- Map controls!
@@ -183,12 +178,11 @@ export default function Map(props: MapProps) {
 					map.getCenter().lat,
 					map.getCenter().lng,
 				];
-				if (newCentre[0] !== centre[0] && newCentre[1] !== centre[1]) {
-					setMapPositions({
-						centre: newCentre,
-						markerPosition: markerPosition,
-						trailPath: trailPath,
-					});
+				if (
+					newCentre[0] !== mapPositions.centre[0] &&
+					newCentre[1] !== mapPositions.centre[1]
+				) {
+					setMapPositions({ ...mapPositions, centre: newCentre });
 				}
 			},
 			contextmenu: (e) => {
@@ -217,6 +211,7 @@ export default function Map(props: MapProps) {
 		}
 
 		map.panTo(mapPositions.centre);
+		saveToLocalStorage();
 
 		return null;
 	};
@@ -234,7 +229,7 @@ export default function Map(props: MapProps) {
 	const addWater = async (e: any) => {
 		e.stopPropagation();
 
-		if (waterArray && popupPosition) {
+		if (waterArray != null && popupPosition) {
 			setWaterArray((current) => [...current, popupPosition]);
 		} else if (popupPosition) {
 			setWaterArray([popupPosition]);
@@ -267,7 +262,7 @@ export default function Map(props: MapProps) {
 		<div className={`map-container-box ${fullScreen ? "shift-map" : "small"}`}>
 			<MapContainer
 				style={{ height: "100%", width: "100%" }}
-				center={centre}
+				center={mapPositions.centre}
 				zoom={20}
 				scrollWheelZoom={true}
 			>
@@ -438,7 +433,6 @@ export default function Map(props: MapProps) {
 											setPinArray(holdingArray);
 											setMapPositions({
 												centre: mapPositions.centre,
-												markerPosition: mapPositions.markerPosition,
 												trailPath: mapPositions.trailPath,
 											});
 										}

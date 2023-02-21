@@ -6,17 +6,19 @@
 	position: absolute;
 	width: 200px;
 	justify-content: flex-end;
+	cursor: pointer;
 
-	&.hide {
-		menu {
-			max-height: 0;
-			transition: max-height 0.4s ease-in-out;
+	@include mixins.for-phone-only {
+		&.hide {
+			menu {
+				max-height: 0;
+				transition: max-height 0.4s ease-in-out;
+			}
 		}
-	}
-	&.show {
-		cursor: pointer;
-		menu {
-			max-height: 200px;
+		&.show {
+			menu {
+				max-height: 200px;
+			}
 		}
 	}
 
@@ -37,8 +39,11 @@
 		top: 19px;
 		right: 0px;
 		max-height: 0px;
+		background-color: white;
+		border-radius: 10px;
+		padding: 0;
+
 		@include mixins.for-phone-only {
-			background-color: white;
 			padding: 0;
 			border-radius: 10px 0 0px 10px;
 			right: -2px;
