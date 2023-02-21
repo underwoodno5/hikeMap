@@ -3,6 +3,7 @@
 	box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
 	border-radius: 5px;
 	margin: 10px;
+	background-color: var(--card-background);
 }
 
 @mixin center-flex {
@@ -94,6 +95,12 @@
 
 @mixin for-phone-only {
 	@media (max-width: 599px) {
+		@content;
+	}
+}
+
+@mixin for-tablet-and-below {
+	@media (max-width: 1023) {
 		@content;
 	}
 }

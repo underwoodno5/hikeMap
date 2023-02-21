@@ -10,13 +10,14 @@ export default function MicroTrailList(props: {
 	user: Me | null;
 	appData: AppData;
 	clickedTrail: number;
+	mobileHide: Function;
 }) {
 	const scrollRef = useRef<HTMLLIElement>(null);
-	const { trails, moveMap, admin, swapSideBar, clickedTrail } = props;
+	const { trails, moveMap, admin, swapSideBar, clickedTrail, mobileHide } =
+		props;
 	const { allTrails, userTrails, userCustomTrails, user } = props.appData;
 	let selectedTrails = trails;
 	const [isExpanded, setIsExpanded] = useState(clickedTrail);
-	console.log(admin);
 
 	const [displayedTrails, setDisplayedTrails] = useState({
 		trails: selectedTrails,
@@ -26,7 +27,6 @@ export default function MicroTrailList(props: {
 	useEffect(() => {
 		//-- this keeps it from scrolling if the page is loaded without selecting a
 		if (scrollRef.current && isExpanded !== 0) {
-			console.log("fast");
 			scrollRef.current.scrollIntoView();
 		}
 	}, [isExpanded]);
@@ -60,11 +60,11 @@ export default function MicroTrailList(props: {
 	return (
 		<>
 			<div className="list-tab">
-				<h3 onClick={() => trailClick(allTrails)}>Trail List</h3>
+				<h4 onClick={() => trailClick(allTrails)}>Trail List</h4>
 				{user && (
 					<>
-						<h3 onClick={() => trailClick(userTrails)}>User List</h3>
-						<h3 onClick={() => trailClick(userCustomTrails)}>Custom List</h3>
+						<h4 onClick={() => trailClick(userTrails)}>User List</h4>
+						<h4 onClick={() => trailClick(userCustomTrails)}>Custom List</h4>
 					</>
 				)}
 			</div>
@@ -85,19 +85,19 @@ export default function MicroTrailList(props: {
 								)
 							}
 						>
-							<h4>{trailObject.name}</h4>
+							<h5>{trailObject.name}</h5>
 							{isExpanded === i &&
 								displayedTrails.displayed === true &&
 								user && (
 									<div className="trail-list-expansion">
-										{admin && (
+										{user && (
 											<button onClick={(e) => sideBarClick(e)}>
 												Create custom trail
 											</button>
 										)}
-										{trailObject.createdby && (
-											<button>customTrailButton</button>
-										)}
+										<button className="mobile" onClick={() => mobileHide()}>
+											View Map
+										</button>
 									</div>
 								)}
 						</li>

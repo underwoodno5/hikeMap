@@ -9,10 +9,11 @@ interface CustomMapCreationgProps {
 	clearMap: Function;
 	throwError: Function;
 	swapSideBar: Function;
+	mobileHide: Function;
 }
 
 export default function CustomMapCreation(props: CustomMapCreationgProps) {
-	const { swapSideBar, throwError } = props;
+	const { swapSideBar, throwError, mobileHide } = props;
 	const [showModal, setShowModal] = useState(false);
 
 	//-- When we save the path we take all the data from localstorage, we have to stringify the arrays otherwise we lose the *[]* and graphql
@@ -55,8 +56,12 @@ export default function CustomMapCreation(props: CustomMapCreationgProps) {
 				<button onClick={() => sideBarClick()} className="back">
 					<i className="las la-angle-left back"></i>
 				</button>
+
 				<h3>Custom Map Creation</h3>
 				<button onClick={modalStateSwap}>Click here to save custom map</button>
+				<button onClick={() => mobileHide()} className="mobile">
+					Edit Map
+				</button>
 			</div>
 		</>
 	);

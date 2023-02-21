@@ -12,8 +12,9 @@ export default function MapPage(props: {
 	throwError: Function;
 	user: Me | null;
 	appData: AppData;
+	shrinkTopBar: Function;
 }) {
-	const { trails, user } = props;
+	const { trails, user, shrinkTopBar } = props;
 	const { state } = useLocation();
 
 	//--This data is either taken from the state sent by clicking on a trail in Full Trail List or from the
@@ -42,6 +43,7 @@ export default function MapPage(props: {
 		custom: false,
 	});
 	const [hideSideBar, setHideSideBar] = useState(false);
+	const [mobileHide, setMobileHide] = useState(false);
 
 	const moveMap = (
 		x: number,
@@ -57,6 +59,9 @@ export default function MapPage(props: {
 			waterPoints: a,
 			tentPoints: b,
 		});
+		if (hideSideBar === true) {
+			setHideSideBar(false);
+		}
 	};
 
 	//--This function is called from the microtraillist, the map watches for this boolean change
@@ -68,27 +73,44 @@ export default function MapPage(props: {
 		setModeObj({ clear: modeObj.clear, custom: !modeObj.custom });
 	};
 
-	const expandMap = (x: boolean) => {
+	const expandMap = () => {
 		setHideSideBar(!hideSideBar);
+	};
+
+	const expandMapMobile = () => {
+		setMobileHide(!mobileHide);
 	};
 	return (
 		<div className={`map-page-container`}>
+			<i
+				className={`las la-chevron-circle-${
+					mobileHide ? "right" : "left"
+				} side-bar-select`}
+				onClick={() => expandMapMobile()}
+			></i>
 			<Map
 				centre={mapPositions.centre}
 				markerPosition={mapPositions.markerPosition}
 				trailPath={mapPositions.trailPath}
 				clear={modeObj.clear}
 				clearMap={clearMap}
-				expandMap={(x: boolean) => expandMap(x)}
+				expandMap={(x: boolean) => expandMap()}
 				waterArray={mapPositions.waterPoints}
 				tentArray={mapPositions.tentPoints}
+				shrinkTopBar={() => shrinkTopBar()}
+				customize={modeObj.custom}
 			/>
-			<div className={`side-bar-container ${hideSideBar && "hide"}`}>
+			<div
+				className={`side-bar-container ${hideSideBar && "hide"}  ${
+					mobileHide && "mobile-hide"
+				}`}
+			>
 				{modeObj.custom && (
 					<CustomMapCreation
 						clearMap={clearMap}
 						throwError={props.throwError}
 						swapSideBar={swapSideBar}
+						mobileHide={() => expandMapMobile()}
 					/>
 				)}
 				{!modeObj.custom && (
@@ -100,6 +122,7 @@ export default function MapPage(props: {
 						user={user}
 						swapSideBar={swapSideBar}
 						appData={props.appData}
+						mobileHide={() => expandMapMobile()}
 					/>
 				)}
 			</div>

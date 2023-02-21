@@ -2,10 +2,17 @@
 
 @include mixins.vertical-animation-mixin(shift-map-on-zoom, 0, -90px, -95px);
 @include mixins.height-animation-mixin(grow-map, 80vh, 100vh);
+@include mixins.pulse-animation-mixin(
+	location-pulse,
+	rgba(44, 52, 204, 0),
+	rgba(44, 52, 204, 0.08),
+	10px
+);
 .map-container-box {
 	flex-grow: 1;
 	overflow: hidden;
-	height: 80vh;
+	height: calc(var(--fullscreen-w-topbar) - 20px);
+	z-index: 1;
 
 	&.shift-map {
 		flex-grow: 1;
@@ -13,10 +20,10 @@
 		animation: shift-map-on-zoom 0.3s ease-out forwards,
 			grow-map 0.3s ease-out forwards;
 		animation-delay: 0.5s;
-		z-index: 10000;
+		z-index: 10;
 	}
 
-	.expand {
+	.custom-control {
 		z-index: 1000;
 		padding: 0px 2px;
 		font-size: 25px;
@@ -26,6 +33,9 @@
 		&:hover {
 			background-color: #f4f4f4;
 		}
+	}
+	.black {
+		color: black;
 	}
 }
 
@@ -48,6 +58,11 @@
 		&.water {
 			bottom: 12px;
 			color: blue;
+		}
+		&.crosshairs {
+			color: blue;
+			animation: location-pulse 1s ease-out infinite;
+			border-radius: 50%;
 		}
 	}
 }

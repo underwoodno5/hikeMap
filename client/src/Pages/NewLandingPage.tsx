@@ -1,6 +1,6 @@
 import React, { useContext, useEffect, useState } from "react";
 import "./LandingPage.scss";
-import logo from "../images/logo.svg";
+import { Outlet, useNavigate, useOutletContext } from "react-router";
 
 import "./LandingPage.scss";
 
@@ -9,6 +9,7 @@ const iconList = ["mobile", "scene", "desktop"];
 export default function LandingPage() {
 	const [index, setIndex] = useState(0);
 	const [animate, setAnimate] = useState(true);
+	const childNavigate = useOutletContext<Function>();
 
 	const swapIcon = () => {
 		if (animate === false) {
@@ -28,7 +29,7 @@ export default function LandingPage() {
 		<div className="landing-container new">
 			<div className="landing-page-info">
 				<h2>A simple map</h2>
-				<h3>On desktop, mobile, and offline.</h3>
+				<h4>On desktop, mobile, and offline.</h4>
 			</div>
 			<div className="landing-animation-container">
 				<div className={`frame frame-${iconList[index]}`}>
@@ -115,7 +116,13 @@ export default function LandingPage() {
 				</div>
 			</div>
 			<div className="landing-page-info">
-				<h3>Create, save, and share custom maps with markers.</h3>
+				<h4>Create, save, and share custom maps with markers.</h4>
+				<div>
+					<i
+						className="las la-arrow-alt-circle-right"
+						onClick={() => childNavigate("traillist")}
+					></i>
+				</div>
 			</div>
 		</div>
 	);

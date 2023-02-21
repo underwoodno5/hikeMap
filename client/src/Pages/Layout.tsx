@@ -9,6 +9,7 @@ import "./Layout.scss";
 interface LayoutProps {
 	error?: String;
 	errorFunction: Function;
+	topBar: boolean;
 }
 
 export default function Layout(props: LayoutProps) {
@@ -25,7 +26,7 @@ export default function Layout(props: LayoutProps) {
 
 	const transition = (x: string) => {
 		setPageTransition(true);
-		setPageAnimation("slide-out");
+		setPageAnimation("fade-main-out");
 		setPageDisplay(x);
 	};
 
@@ -54,7 +55,7 @@ export default function Layout(props: LayoutProps) {
 	};
 	return (
 		<div className="App">
-			<TopBar transition={transition} />
+			<TopBar transition={transition} topBar={props.topBar} />
 			{error && (
 				<ErrorMsg errorText={error} closeFunction={() => errorFunction("")} />
 			)}

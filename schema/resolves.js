@@ -125,9 +125,9 @@ exports.roots = {
 				user.save();
 				context.res.cookie("token", user.token, {
 					httpOnly: false,
-					sameSite: "Strict",
+					SameSite: "None",
 					maxAge: 86400 * 1000,
-					// secure: true, //un-comment in production
+					// secure: true, SameSite:"Strict" //un-comment in production and change
 				});
 				return user;
 			} else {
@@ -269,12 +269,13 @@ exports.roots = {
 	},
 
 	getMyTrailList: async ({}, context) => {
-		const userId = context.req.user.id;
-		if (!context.req.isAuth) {
+		if (!context.req.isAuth || !context.req.user) {
 			throw new Error(
 				"Not authorized, please login to add a new trail to the database"
 			);
 		}
+		const userId = context.req.user.id;
+
 		const user = await User.findOne({ id: userId })
 			.populate("trailList")
 			.populate("userTrails");

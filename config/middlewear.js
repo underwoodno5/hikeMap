@@ -2,7 +2,7 @@ const jwt = require("jsonwebtoken");
 
 exports.auth = async function (req, res, next) {
 	const cookieString = req.headers.cookie;
-
+	console.log(cookieString);
 	//-- Every API call we're pulling a cookie from the header, and using it to verify the user to check if they
 	//-- are logged in and an admin.
 

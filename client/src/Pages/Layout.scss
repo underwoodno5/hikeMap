@@ -1,6 +1,19 @@
 @use "../mixins";
 
+@include mixins.opacity-animation-mixin(main-fade, 1, 0);
+.slide-main-out {
+	animation: slide-out 0.5s cubic-bezier(0.39, 0.575, 0.565, 1) forwards;
+}
+
 .slide-page-up {
 	animation: slide-up 0.5s cubic-bezier(0.39, 0.575, 0.565, 1) both,
 		fade-in 0.8s cubic-bezier(0.39, 0.575, 0.565, 1) both;
+}
+
+.fade-main-out {
+	animation: main-fade 0.2s cubic-bezier(0.39, 0.575, 0.565, 1) forwards;
+}
+
+.main-container {
+	z-index: 2;
 }

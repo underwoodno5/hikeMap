@@ -5,27 +5,55 @@
 	width: 100%;
 	display: flex;
 	flex-direction: row;
+	height: var(--fullscreen-w-topbar);
+	background-color: var(--background-dark);
+	.fullscreen {
+		z-index: 10;
+	}
 
-	.hide {
-		width: 0px;
-		margin: 0;
+	.side-bar-select {
+		display: none;
+		position: absolute;
+		right: 0px;
+		font-size: 2rem;
+		z-index: 10;
+		transform: translateY(-40px);
+
+		@include mixins.for-phone-only {
+			display: inherit;
+		}
 	}
 }
 
 .side-bar-container {
 	@include mixins.card;
-	width: 25%;
 	background-color: var(--blue-accent);
-	height: 80vh;
+	height: calc(var(--fullscreen-w-topbar) - 20px);
 	margin: 0 10px;
 	display: flex;
 	flex-direction: column;
 	transition: width 0.4s ease-in-out;
+	position: relative;
+	width: 20%;
+	@include mixins.for-desktop {
+		&.hide {
+			width: 0;
+			margin: 0;
+		}
+	}
+	@include mixins.for-phone-only {
+		width: 0;
+		margin: 0;
+		overflow: hidden;
+		&.mobile-hide {
+			width: 100%;
+		}
+	}
 }
 
-.full-screen {
-	position: absolute;
-	width: 100%;
-	height: 100vh;
-	top: 0;
-}
+// .full-screen {
+// 	// position: absolute;
+// 	width: 100%;
+// 	height: 100vh;
+// 	top: 0;
+// }

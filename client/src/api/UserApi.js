@@ -45,8 +45,10 @@ exports.User = {
 		return res;
 	},
 	logout: async (username, password) => {
-		document.cookie = "token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
 		localStorage.clear();
+
+		document.cookie =
+			"token='; SameSite=None;expires=Thu, 01 Jan 2024 00:00:00 UTC; Path=/;";
 	},
 	me: async () => {
 		let graphqlQuery = {
@@ -113,18 +115,6 @@ exports.User = {
 			return res.error;
 		} else {
 			return res.data.getMyTrailList;
-		}
-	},
-	location: async () => {
-		if ("geolocation" in navigator) {
-			const pos = await new Promise((resolve, reject) => {
-				navigator.geolocation.getCurrentPosition(resolve, reject);
-			});
-
-			return await pos;
-		} else {
-			console.log("none");
-			throw new Error("Geolocation not allowed in settings or in browser");
 		}
 	},
 };

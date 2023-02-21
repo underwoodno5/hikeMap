@@ -1,11 +1,41 @@
-import React from "react";
+import React, { useRef, useEffect, useState } from "react";
 import "./DropdownMenu.scss";
 
-export default function Menu(props: { transition: Function }) {
+function useOutsideAlerter(ref: any, setShowMenu: any, setClicked: any) {
+	useEffect(() => {
+		function handleClickOutside(event: any) {
+			if (ref.current && !ref.current.contains(event.target)) {
+				setShowMenu(false);
+			}
+		}
+		document.addEventListener("mouseup", handleClickOutside);
+		return () => {
+			document.removeEventListener("mouseup", handleClickOutside);
+		};
+	}, [ref]);
+}
+
+export default function Menu(props: {
+	transition: Function;
+	setClicked: Function;
+}) {
+	const wrapperRef = useRef(null);
+	const [showMenu, setShowMenu] = useState<boolean>(false);
+	const swapMenu = () => {
+		if (showMenu === false) {
+			props.setClicked(true);
+		}
+		setShowMenu(!showMenu);
+	};
+	useOutsideAlerter(wrapperRef, setShowMenu, props.setClicked);
 	return (
-		<div className="dropdown-menu-container">
+		<div
+			className={`dropdown-menu-container ${showMenu ? "show" : "hide"}`}
+			ref={wrapperRef}
+			onClick={() => swapMenu()}
+		>
 			<i className="las la-bars"></i>
-			<menu>
+			<menu onTransitionEnd={() => props.setClicked(showMenu)}>
 				<li>
 					<button className="light" onClick={() => props.transition("about")}>
 						About

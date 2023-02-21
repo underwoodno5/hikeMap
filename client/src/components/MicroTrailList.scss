@@ -3,6 +3,12 @@
 .list-tab {
 	display: flex;
 	justify-content: space-evenly;
+	.header {
+		cursor: pointer;
+		&:focus {
+			background: red;
+		}
+	}
 }
 
 ul {

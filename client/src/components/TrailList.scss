@@ -2,9 +2,11 @@
 
 .trail-list-container {
 	@include mixins.card;
+	margin: 0;
+	max-height: calc(var(--vh) - 125px);
 	width: 90%;
 	align-self: center;
-	background-color: var(--blue-accent);
+	background-color: var(--card-background);
 	flex-direction: column;
 	display: flex;
 	align-items: center;
@@ -15,9 +17,9 @@
 		display: flex;
 	}
 
-	h3 {
-		align-self: flex-start;
-		margin-left: 5%;
+	h5 {
+		flex: 1 1 0px;
+		text-align: left;
 	}
 	.selected {
 		background-color: blue;
@@ -27,29 +29,24 @@
 	ul {
 		list-style-type: none;
 		width: 95%;
-		height: calc(100vh - 270px);
 		overflow: scroll;
 		justify-content: flex-start;
 
 		li {
-			// @include mixins.card;
-			// padding: 20px 25px 20px 25px;
-			// background-color: var(--button-light);
-			// color: var(--font-light);
 			display: flex;
 			justify-content: space-between;
 			align-items: center;
 			transition: background-color 0.25s ease-in;
-			width: 94%;
+			width: calc(94% - 25px);
 			z-index: 1;
 			&.match {
-				background-color: var(--background-dark);
+				background-color: var(--card-background);
 				&:hover {
-					background-color: var(--hover-dark);
+					background-color: var(--card-background-hover);
 				}
 			}
 			&:hover {
-				background-color: var(--hover-light);
+				background-color: var(--card-background-hover);
 				cursor: pointer;
 			}
 			h4 {
@@ -69,6 +66,7 @@
 		align-self: flex-end;
 		margin-right: 5%;
 		margin-top: 10px;
+		flex-shrink: 0;
 	}
 }
 

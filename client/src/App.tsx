@@ -19,6 +19,17 @@ import LoginPage from "./pages/LoginPage";
 import MapPage from "./pages/MapPage";
 
 function App() {
+	//-- This is our hack for mobile fullscreen, lets us take into account the browser bars and whatnot.
+	const getWindowHeight = () => {
+		let vh = window.innerHeight;
+		document.documentElement.style.setProperty("--vh", `${vh}px`);
+	};
+	getWindowHeight();
+
+	window.addEventListener("resize", () => {
+		getWindowHeight();
+	});
+
 	const [appData, setAppData] = useState<AppData>({
 		user: null,
 		allTrails: null,
@@ -27,15 +38,15 @@ function App() {
 	});
 
 	const [loading, setLoading] = useState(true);
+	const [topBar, setTopBar] = useState(true);
 	const [error, setError] = useState("");
+	const online = navigator.onLine;
 
 	useEffect(() => {
 		//-- When loading the page (if connected to the internet) we want to grab the Userdata and Trails data from the server
 		//-- the api will store the info in localstorage
-
 		const fetchData = async () => {
 			const response = await Promise.all([User.me(), Trails.getAll()]);
-			User.location();
 			setAppData({
 				user: response[0].me,
 				allTrails: response[1],
@@ -44,13 +55,21 @@ function App() {
 			});
 			setLoading(false);
 		};
-		fetchData().catch((err) => console.log(err));
+		if (online) {
+			fetchData().catch((err) => console.log(err));
+		}
 	}, []);
 
 	//-- This global errorfunction gets passed as a prop to any object that will throw errors, place error text in function.
 	const errorFunction = (x: string) => {
 		console.log("error");
 		setError(x);
+	};
+
+	//-- Use this to animate removal of the topbar in case you need fullscreen for anything.
+	const shrinkTopBar = () => {
+		console.log("shrink");
+		setTopBar(!topBar);
 	};
 
 	const LoadingCheck = () => {
@@ -61,7 +80,13 @@ function App() {
 				<Routes>
 					<Route
 						path="/"
-						element={<Layout error={error} errorFunction={errorFunction} />}
+						element={
+							<Layout
+								error={error}
+								errorFunction={errorFunction}
+								topBar={topBar}
+							/>
+						}
 					>
 						<Route path="/" element={<NewLanding />} />
 						{appData.allTrails && (
@@ -99,6 +124,7 @@ function App() {
 										user={appData.user || null}
 										throwError={errorFunction}
 										appData={appData}
+										shrinkTopBar={() => shrinkTopBar()}
 									/>
 								}
 							/>

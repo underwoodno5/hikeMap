@@ -1,24 +1,48 @@
+@use "../mixins";
+
 .dropdown-menu-container {
 	height: 35px;
 	display: flex;
 	position: absolute;
 	width: 200px;
 	justify-content: flex-end;
-	&:hover {
+
+	&.hide {
+		menu {
+			max-height: 0;
+			transition: max-height 0.4s ease-in-out;
+		}
+	}
+	&.show {
 		cursor: pointer;
 		menu {
 			max-height: 200px;
-			transition: max-height 0.4s ease-in-out;
+		}
+	}
+
+	@include mixins.for-desktop {
+		&:hover {
+			cursor: pointer;
+			menu {
+				max-height: 200px;
+				transition: max-height 0.4s ease-in-out;
+			}
 		}
 	}
 	menu {
 		list-style-type: none;
 		overflow: hidden;
-		transition: max-height 0.25s ease-in;
+		transition: max-height 0.4s ease-in-out;
 		position: absolute;
 		top: 19px;
 		right: 0px;
 		max-height: 0px;
+		@include mixins.for-phone-only {
+			background-color: white;
+			padding: 0;
+			border-radius: 10px 0 0px 10px;
+			right: -2px;
+		}
 		li {
 			width: 100%;
 			button {
@@ -26,6 +50,11 @@
 				text-align: left;
 				padding-left: 20px;
 				padding-right: 20px;
+				color: var(--font-dark);
+				opacity: 1;
+				&:hover {
+					background-color: rgba(218, 218, 217, 0.8);
+				}
 			}
 		}
 	}

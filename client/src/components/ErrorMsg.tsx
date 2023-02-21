@@ -15,7 +15,7 @@ export default function ErrorMsg(props: ErrorMsg) {
 	};
 	return (
 		<div className="error-box slide-up">
-			<h2>!{props.errorText}</h2>
+			<h3>{props.errorText}</h3>
 			{props.closeFunction && (
 				<button className="light close" onClick={handleClick}>
 					X
