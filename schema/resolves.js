@@ -286,7 +286,7 @@ exports.roots = {
 		return res;
 	},
 	addCustomUserTrail: async (
-		{ pathPoints, name, distance, waterPoints, tentPoints },
+		{ pathPoints, name, distance, waterPoints, tentPoints, trailID },
 		context
 	) => {
 		if (!context.req.isAuth) {
@@ -294,28 +294,36 @@ exports.roots = {
 				"You must be logged in to save a custom trail path, it will be cached while you login/create an account so you can save it."
 			);
 		}
+
 		const userId = context.req.user.id;
 		const user = await User.findOne({ userId });
+		console.log(tentPoints);
 
-		const userTrail = new UserTrail({
-			_id: new mongoose.Types.ObjectId(),
-			createdby: userId,
-			name,
-			startLat: pathPoints[0][0],
-			startLong: pathPoints[0][1],
-			trailPath: pathPoints,
-			distance,
-			waterPoints,
-			tentPoints,
-		});
-
-		console.log(userTrail.waterPoints);
-
-		user.userTrails.push(userTrail._id);
-
-		await user.save();
-		await userTrail.save();
-
-		return userTrail;
+		const foundTrail = await UserTrail.findById(trailID);
+		if (name === "undefined" && foundTrail) {
+			foundTrail.startLat = pathPoints[0][0];
+			foundTrail.startLong = pathPoints[0][1];
+			foundTrail.trailPath = pathPoints;
+			foundTrail.distance = distance;
+			foundTrail.waterPoints = waterPoints;
+			foundTrail.tentPoints = tentPoints;
+			await foundTrail.save();
+			return foundTrail;
+		} else {
+			const userTrail = new UserTrail({
+				_id: new mongoose.Types.ObjectId(),
+				createdby: userId,
+				name,
+				startLat: pathPoints[0][0],
+				startLong: pathPoints[0][1],
+				trailPath: pathPoints,
+				distance,
+				waterPoints,
+				tentPoints,
+			});
+			await user.save();
+			await userTrail.save();
+			return userTrail;
+		}
 	},
 };

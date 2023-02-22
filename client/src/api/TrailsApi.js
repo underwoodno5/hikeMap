@@ -64,11 +64,12 @@ exports.Trails = {
 		name,
 		waterPoints,
 		tentPoints,
-		distance
+		distance,
+		trailID
 	) => {
 		let graphqlQuery = {
 			query: `mutation{
-				addCustomUserTrail(pathPoints:${pathPoints}, name:"${name}", waterPoints:${waterPoints}, tentPoints:${tentPoints} distance:${distance}){
+				addCustomUserTrail(pathPoints:${pathPoints} name:"${name}" waterPoints:${waterPoints} tentPoints:${tentPoints} distance:${distance} trailID:"${trailID}"){
 				  name
 				  createdby
 				}
@@ -77,7 +78,7 @@ exports.Trails = {
 		let res = await response(graphqlQuery)
 			.then((res) => res.json())
 			.catch((err) => {
-				return err;
+				console.log("err");
 			});
 		return res;
 	},

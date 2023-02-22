@@ -28,10 +28,9 @@ let corsOptions = {
 };
 
 var allowCrossDomain = function (req, res, next) {
-	res.header("Access-Control-Allow-Origin", "http://192.168.2.14:5000");
+	res.header("Access-Control-Allow-Origin", "http://192.168.2.14:3000");
 	res.header("Access-Control-Allow-Methods", "GET,PUT,POST,DELETE");
 	res.header("Access-Control-Allow-Headers", "Content-Type");
-
 	next();
 };
 

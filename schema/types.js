@@ -17,7 +17,7 @@ type Mutation{
 	login(name: String, password:String): User
 	createTrail(name: String, trailPath:[[Float]]): Trail
 	addToTrailList(trails: [TrailInput]): String
-	addCustomUserTrail(pathPoints: [[Float]], name:String, distance:Float, waterPoints: [[Float]], tentPoints:[[Float]]): UserTrail
+	addCustomUserTrail(pathPoints: [[Float]], name:String, distance:Float, waterPoints: [[Float]], tentPoints:[[Float]], trailID: String): UserTrail
 	updateTrail(trailName:String, username:String, password:String, newName:String, newPath:[[Float]], newDistance:Float): Trail
 
 }

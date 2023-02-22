@@ -114,6 +114,7 @@ exports.User = {
 		if (res.data.error) {
 			return res.error;
 		} else {
+			console.log(res.data.getMyTrailList);
 			return res.data.getMyTrailList;
 		}
 	},

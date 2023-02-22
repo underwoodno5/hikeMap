@@ -49,17 +49,9 @@ export default function MapPage(props: {
 
 	const moveMap = (c: Trail) => {
 		setTrailObject(c);
-		console.log(c);
 		if (hideSideBar === true) {
 			setHideSideBar(false);
 		}
-		// setmapPositions({
-		// 	centre: [x, y],
-		// 	markerPosition: [x, y],
-		// 	trailPath: z,
-		// 	waterPoints: a,
-		// 	tentPoints: b,
-		// });
 	};
 
 	//--This function is called from the microtraillist, the map watches for this boolean change
@@ -105,6 +97,7 @@ export default function MapPage(props: {
 						throwError={props.throwError}
 						swapSideBar={swapSideBar}
 						mobileHide={() => expandMapMobile()}
+						trailObject={trailObject}
 					/>
 				)}
 				{!modeObj.custom && (

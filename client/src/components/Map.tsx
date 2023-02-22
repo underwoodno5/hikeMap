@@ -38,6 +38,7 @@ export default function Map(props: MapProps) {
 		trailPath: trailObject.trailPath,
 	});
 	let pinDragArray: [number, number][] = [];
+	console.log("render");
 
 	//-- We have to use state for a number of things tied to the map. Leaflet doesn't like to re-draw certain elements on
 	// unless the state of the props SPECIFIC to that element change. e.g - if we just used trailPath as our prop for our polygon
@@ -49,7 +50,6 @@ export default function Map(props: MapProps) {
 	const [waterArray, setWaterArray] = useState<[number, number][]>(
 		trailObject.waterPoints || []
 	);
-	console.log(waterArray);
 	const [popupPosition, setPopupPosition] = useState<[number, number] | null>(
 		null
 	);
@@ -64,10 +64,10 @@ export default function Map(props: MapProps) {
 	}
 
 	//-- This lets our data jump state when new props come from trailList or microTrailList and checks our gelocation.
-	var customControlList = document.getElementsByClassName("custom-control");
 
 	useEffect(() => {
 		setPinArray(trailObject.trailPath);
+		setTentArray(trailObject.tentPoints || []);
 		setWaterArray(trailObject.waterPoints || []);
 		setMapPositions({
 			centre: trailObject.trailPath[0],
@@ -76,18 +76,17 @@ export default function Map(props: MapProps) {
 	}, [trailObject]);
 
 	// -- This finds our expand div icon and turns it into a Leaflet DOM event. This lets us stop the click from propagating to the map
-	// and triggering map interaction. It's called in useEffect because otherwise extra eventlisteners would be created every time the map
-	// re-rendered (which is a lot).
+	// and triggering map interaction. If you want to add extra logic it has to be called in useEffect because otherwise extra
+	// eventlisteners would be created every time the map re-rendered (which is a lot).
+	var customControlList = document.getElementsByClassName("custom-control");
 
-	useEffect(() => {
-		if (customControlList[0]) {
-			for (let i = 0; i < customControlList.length; i++) {
-				var c = customControlList[i] as HTMLElement;
+	if (customControlList[0]) {
+		for (let i = 0; i < customControlList.length; i++) {
+			var c = customControlList[i] as HTMLElement;
 
-				L.DomEvent.disableClickPropagation(c);
-			}
+			L.DomEvent.disableClickPropagation(c);
 		}
-	}, [customControlList, customControlList[0]]);
+	}
 
 	//- Here we change the state that allows our map to resize on re-render, then we swap state the state in the map
 	// so it won't resize after each re-render. Seperate functions for mobile/desktop.
@@ -157,6 +156,7 @@ export default function Map(props: MapProps) {
 				tentArray: tentArray,
 				waterArray: waterArray,
 				distance: distanceFunction(),
+				trailID: trailObject._id,
 			})
 		);
 	};
@@ -212,7 +212,6 @@ export default function Map(props: MapProps) {
 
 		map.panTo(mapPositions.centre);
 		saveToLocalStorage();
-
 		return null;
 	};
 

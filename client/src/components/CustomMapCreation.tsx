@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import Modal from "./Modal";
 import Form from "./Form";
 import { Trails } from "../api/TrailsApi";
+import { Trail } from "../types/interface";
 
 import "./CustomMapCreation.scss";
 
@@ -10,16 +11,17 @@ interface CustomMapCreationgProps {
 	throwError: Function;
 	swapSideBar: Function;
 	mobileHide: Function;
+	trailObject: Trail;
 }
 
 export default function CustomMapCreation(props: CustomMapCreationgProps) {
-	const { swapSideBar, throwError, mobileHide } = props;
+	const { swapSideBar, throwError, mobileHide, trailObject } = props;
 	const [showModal, setShowModal] = useState(false);
 
 	//-- When we save the path we take all the data from localstorage, we have to stringify the arrays otherwise we lose the *[]* and graphql
 	//won't be able to parse the request.
 
-	const savePath = async (name: string) => {
+	const savePath = async (name?: string) => {
 		let storedPoints = localStorage.getItem("customMapPath");
 		let parsedPoints = JSON.parse(storedPoints || "{}");
 
@@ -28,9 +30,10 @@ export default function CustomMapCreation(props: CustomMapCreationgProps) {
 			name,
 			JSON.stringify(parsedPoints.waterArray),
 			JSON.stringify(parsedPoints.tentArray),
-			parsedPoints.distance
+			parsedPoints.distance,
+			parsedPoints.trailID
 		);
-		modalStateSwap();
+		// modalStateSwap();
 		return res;
 	};
 	const modalStateSwap = () => {
@@ -56,9 +59,10 @@ export default function CustomMapCreation(props: CustomMapCreationgProps) {
 				<button onClick={() => sideBarClick()} className="back">
 					<i className="las la-angle-left back"></i>
 				</button>
+				<h4>Editing {trailObject.name}</h4>
 
-				<h3>Custom Map Creation</h3>
 				<button onClick={modalStateSwap}>Click here to save custom map</button>
+				<button onClick={() => savePath()}>Update Map</button>
 				<button onClick={() => mobileHide()} className="mobile">
 					Edit Map
 				</button>
