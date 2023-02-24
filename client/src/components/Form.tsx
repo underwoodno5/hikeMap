@@ -22,7 +22,7 @@ export default function Form(props: FormList) {
 		event.preventDefault();
 		let values = Object.values(formInfo);
 		const res = await props.submitFunction(...values);
-		if (res.errors) {
+		if (res?.errors) {
 			props.throwError(res.errors[0].message);
 		} else {
 			window.location.reload();

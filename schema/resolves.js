@@ -99,6 +99,7 @@ exports.roots = {
 			.populate("trailList")
 			.populate("userTrails");
 
+		console.log(user);
 		if (!user) {
 			throw new Error(
 				"Error: Either the user does not exist or password was incorrect"
@@ -137,6 +138,10 @@ exports.roots = {
 			}
 		}
 	},
+	logout: async ({}, context) => {
+		context.res.clearCookie("token");
+		return "You logged out";
+	},
 	deleteUser: async ({ name }) => {
 		const user = await User.findOne({ name: name });
 		const hash = user.password;
@@ -166,16 +171,21 @@ exports.roots = {
 	},
 
 	adminCheck: async (name, password, context) => {
+		console.log("admincheck");
+
 		const user = await User.findOne({ name });
 		const hash = user.password;
 		if (context.req.user && user && user.admin) {
 			const passCheck = await bcrypt.compare(password, hash);
 			if (passCheck == true) {
+				console.log("true");
 				return true;
 			} else {
+				console.log("false");
 				throw new Error("Error: You aren't an admin");
 			}
 		} else {
+			console.log("false");
 			throw new Error("Error: You aren't an admin");
 		}
 	},
@@ -217,27 +227,39 @@ exports.roots = {
 		return allTrails;
 	},
 	updateTrail: async (
-		{ trailName, username, password, newName, newPath, newDistance },
+		//-- Simple update, accepting new data, finding model, and saving after filling any blanks with original data
+		{
+			pathPoints,
+			name,
+			distance,
+			waterPoints,
+			tentPoints,
+			trailID,
+			username,
+			password,
+		},
 		context
 	) => {
 		const admin = await this.roots.adminCheck(username, password, context);
-		if (admin) {
-			try {
-				const trail = await Trail.findOne({ name: trailName });
-				if (!trail) {
-					throw new Error("No trail found with that name");
-				}
-				trail.name = newName || trail.name;
-				trail.trailPath = newPath || trail.trailPath;
-				trail.distance = newDistance || trail.distance;
-				trail.save();
-				return trail;
-			} catch (error) {
-				return error;
-			}
-		} else {
-			throw new Error("Error parsing admin request");
-		}
+		// if (admin) {
+		// 	try {
+		// 		const trail = await Trail.findOne({ name: trailName });
+		// 		if (!trail) {
+		// 			throw new Error("No trail found with that name");
+		// 		}
+		// 		trail.name = newName || trail.name;
+		// 		trail.trailPath = newPath || trail.trailPath;
+		// 		trail.distance = newDistance || trail.distance;
+		// 		trail.newWaterPoints = newWaterPoints || trail.waterPoints;
+		// 		trail.newTentPoints = newTentPoints || trail.waterPoints;
+		// 		trail.save();
+		// 		return trail;
+		// 	} catch (error) {
+		// 		return error;
+		// 	}
+		// } else {
+		// 	throw new Error("Error parsing admin request");
+		// }
 	},
 	//------- User Trail Stuff -------\\
 

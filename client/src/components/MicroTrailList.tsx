@@ -53,14 +53,16 @@ export default function MicroTrailList(props: {
 	return (
 		<>
 			<div className="list-tab">
-				<h5
-					className={`header ${
-						displayedTrails.trails === allTrails ? "selected" : null
-					}`}
-					onClick={() => headerClick(allTrails)}
-				>
-					Trail List
-				</h5>
+				{!user && (
+					<h5
+						className={`header ${
+							displayedTrails.trails === allTrails ? "selected" : null
+						}`}
+						onClick={() => headerClick(allTrails)}
+					>
+						Trail List
+					</h5>
+				)}
 				{user && (
 					<>
 						<h5
@@ -69,7 +71,7 @@ export default function MicroTrailList(props: {
 							}`}
 							onClick={() => headerClick(userTrails)}
 						>
-							User List
+							Saved Trails
 						</h5>
 						<h5
 							className={`header ${
@@ -77,7 +79,7 @@ export default function MicroTrailList(props: {
 							}`}
 							onClick={() => headerClick(userCustomTrails)}
 						>
-							Custom List
+							Your Custom Trails
 						</h5>
 					</>
 				)}
@@ -89,6 +91,7 @@ export default function MicroTrailList(props: {
 							ref={i === isExpanded ? scrollRef : null}
 							key={i}
 							onClick={(e) => clickTrail(trailObject, i)}
+							className={i === isExpanded && user ? "expand" : ""}
 						>
 							<h5>{trailObject.name}</h5>
 							{isExpanded === i &&
@@ -97,9 +100,7 @@ export default function MicroTrailList(props: {
 									<div className="trail-list-expansion">
 										{user && (
 											<button onClick={(e) => sideBarClick(e)}>
-												{displayedTrails.trails === allTrails
-													? "Create new custom trail"
-													: "Edit Trail"}
+												Edit Trail
 											</button>
 										)}
 										<button className="mobile" onClick={() => mobileHide()}>

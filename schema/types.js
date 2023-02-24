@@ -15,10 +15,11 @@ type Query{
 type Mutation{
 	createUser(name:String, password: String):User
 	login(name: String, password:String): User
+	logout: String
 	createTrail(name: String, trailPath:[[Float]]): Trail
 	addToTrailList(trails: [TrailInput]): String
 	addCustomUserTrail(pathPoints: [[Float]], name:String, distance:Float, waterPoints: [[Float]], tentPoints:[[Float]], trailID: String): UserTrail
-	updateTrail(trailName:String, username:String, password:String, newName:String, newPath:[[Float]], newDistance:Float): Trail
+	updateTrail(pathPoints: [[Float]], name:String, distance:Float, waterPoints: [[Float]], tentPoints:[[Float]], trailID: String, username:String, password:String): Trail
 
 }
 

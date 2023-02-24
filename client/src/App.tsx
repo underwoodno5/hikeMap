@@ -58,7 +58,7 @@ function App() {
 		if (online) {
 			fetchData().catch((err) => console.log(err));
 		}
-	}, []);
+	}, [online]);
 
 	//-- This global errorfunction gets passed as a prop to any object that will throw errors, place error text in function.
 	const errorFunction = (x: string) => {

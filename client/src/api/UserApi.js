@@ -17,6 +17,8 @@ const response = (graphqlQuery) =>
 
 exports.User = {
 	login: async (username, password) => {
+		console.log(username);
+
 		let graphqlQuery = {
 			query: `mutation{login(name:"${username}" password:"${password}"){
             name
@@ -35,6 +37,7 @@ exports.User = {
 			.catch((err) => {
 				console.log(err);
 			});
+		console.log(res);
 		if (!res.errors) {
 			localStorage.setItem(
 				"myTrailList",
@@ -45,10 +48,22 @@ exports.User = {
 		return res;
 	},
 	logout: async (username, password) => {
-		localStorage.clear();
+		let graphqlQuery = {
+			query: `mutation{ 
+				logout
+			}`,
+		};
+		const res = await response(graphqlQuery)
+			.then((res) => res.json())
+			.catch((err) => {
+				console.log(err);
+			});
 
 		document.cookie =
-			"token='; SameSite=None;expires=Thu, 01 Jan 2024 00:00:00 UTC; Path=/;";
+			"token= SameSite=None;expires=Thu, 01 Jan 2024 00:00:00 UTC; Path=/;";
+		localStorage.clear();
+		window.location.reload();
+		return res;
 	},
 	me: async () => {
 		let graphqlQuery = {
@@ -101,6 +116,7 @@ exports.User = {
 						distance
 						waterPoints
 						tentPoints
+						createdby
 					}
 						
 			   }

@@ -82,6 +82,30 @@ exports.Trails = {
 			});
 		return res;
 	},
+	updateTrail: async (
+		pathPoints,
+		name,
+		waterPoints,
+		tentPoints,
+		distance,
+		trailID,
+		username,
+		password
+	) => {
+		let graphqlQuery = {
+			query: `mutation{
+				updateTrail(pathPoints:${pathPoints} name:"${name}" waterPoints:${waterPoints} tentPoints:${tentPoints} distance:${distance} trailID:"${trailID}" username:"${username}" password:"${password}"  ){
+				  name
+				}
+			  }`,
+		};
+		let res = await response(graphqlQuery)
+			.then((res) => res.json())
+			.catch((err) => {
+				console.log("err");
+			});
+		return res;
+	},
 	mapConversion: (list) => {
 		let arrayone = list.split(",");
 

@@ -33,7 +33,6 @@
 	display: flex;
 	flex-direction: column;
 	transition: width 0.4s ease-in-out;
-	position: relative;
 	width: 20%;
 	@include mixins.for-desktop {
 		&.hide {

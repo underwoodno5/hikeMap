@@ -98,6 +98,7 @@ export default function MapPage(props: {
 						swapSideBar={swapSideBar}
 						mobileHide={() => expandMapMobile()}
 						trailObject={trailObject}
+						user={user}
 					/>
 				)}
 				{!modeObj.custom && (
