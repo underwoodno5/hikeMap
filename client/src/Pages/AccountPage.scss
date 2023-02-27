@@ -1,0 +1,12 @@
+@use "../mixins";
+.user-page-container {
+	@include mixins.full-screen-box;
+	.user-block {
+		@include mixins.card;
+		display: flex;
+		flex-direction: row;
+		width: 100%;
+		height: 100%;
+		margin: 0;
+	}
+}

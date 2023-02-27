@@ -4,7 +4,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import TrailList from "./components/TrailList";
 // import LandingPage from "./pages/LandingPage";
 import Layout from "./pages/Layout";
-import UserPage from "./pages/UserPage";
+import AccountPage from "./pages/AccountPage";
 import About from "./pages/About";
 import { Trails } from "./api/TrailsApi";
 import { User } from "./api/UserApi";
@@ -42,23 +42,25 @@ function App() {
 	const [error, setError] = useState("");
 	const online = navigator.onLine;
 
-	useEffect(() => {
-		//-- When loading the page (if connected to the internet) we want to grab the Userdata and Trails data from the server
-		//-- the api will store the info in localstorage
-		const fetchData = async () => {
-			const response = await Promise.all([User.me(), Trails.getAll()]);
-			setAppData({
-				user: response[0].me,
-				allTrails: response[1],
-				userTrails: response[0].userTrailList,
-				userCustomTrails: response[0].customTrailList,
-			});
-			setLoading(false);
-		};
-		if (online) {
-			fetchData().catch((err) => console.log(err));
-		}
-	}, [online]);
+	//-- When loading the page (if connected to the internet) we want to grab the Userdata and Trails data from the server
+	//-- the api will store the info in localstorage
+
+	const fetchData = async () => {
+		const response = await Promise.all([User.me(), Trails.getAll()]);
+		setAppData({
+			user: response[0].me,
+			allTrails: response[1],
+			userTrails: response[0].userTrailList,
+			userCustomTrails: response[0].customTrailList,
+		});
+		setLoading(false);
+	};
+
+	if (online && loading && appData.allTrails === null) {
+		fetchData().catch((err) => console.log(err));
+	}
+
+	console.log("render");
 
 	//-- This global errorfunction gets passed as a prop to any object that will throw errors, place error text in function.
 	const errorFunction = (x: string) => {
@@ -85,6 +87,7 @@ function App() {
 								error={error}
 								errorFunction={errorFunction}
 								topBar={topBar}
+								user={appData.user}
 							/>
 						}
 					>
@@ -102,16 +105,14 @@ function App() {
 								}
 							/>
 						)}
+
 						<Route
 							path="login"
 							element={
-								appData.user ? (
-									<UserPage me={appData.user} />
-								) : (
-									<LoginPage errorFunction={errorFunction} />
-								)
+								<LoginPage user={appData.user} errorFunction={errorFunction} />
 							}
 						/>
+						<Route path="account" element={<AccountPage me={appData.user} />} />
 						<Route path="about" element={<About />} />
 						<Route path="newlanding" element={<NewLanding />} />
 

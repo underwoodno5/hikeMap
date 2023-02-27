@@ -14,7 +14,7 @@ export interface Me {
 	_id: number;
 	name: string;
 	admin: boolean;
-}
+} 
 
 export interface AppData {
     user: Me | null;

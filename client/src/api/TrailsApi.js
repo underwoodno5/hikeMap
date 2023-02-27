@@ -40,6 +40,7 @@ exports.Trails = {
 			.catch((err) => {
 				console.log(err);
 			});
+
 		return res.data.getAllTrails;
 	},
 	addToTrailList: async (trails) => {

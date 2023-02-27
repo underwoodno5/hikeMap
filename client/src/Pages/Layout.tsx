@@ -3,13 +3,15 @@ import { Outlet, useNavigate } from "react-router";
 
 import TopBar from "../components/TopBar";
 import ErrorMsg from "../components/ErrorMsg";
-import { Trail } from "../types/interface";
+import { Trail, Me } from "../types/interface";
+
 import "./Layout.scss";
 
 interface LayoutProps {
 	error?: String;
 	errorFunction: Function;
 	topBar: boolean;
+	user: Me | null;
 }
 
 export default function Layout(props: LayoutProps) {
@@ -55,7 +57,7 @@ export default function Layout(props: LayoutProps) {
 	};
 	return (
 		<div className="App">
-			<TopBar transition={transition} topBar={props.topBar} />
+			<TopBar transition={transition} topBar={props.topBar} user={props.user} />
 			{error && (
 				<ErrorMsg errorText={error} closeFunction={() => errorFunction("")} />
 			)}

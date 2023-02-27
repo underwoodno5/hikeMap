@@ -38,7 +38,6 @@ export default function Map(props: MapProps) {
 		trailPath: trailObject.trailPath,
 	});
 	let pinDragArray: [number, number][] = [];
-	console.log("render");
 
 	//-- We have to use state for a number of things tied to the map. Leaflet doesn't like to re-draw certain elements on
 	// unless the state of the props SPECIFIC to that element change. e.g - if we just used trailPath as our prop for our polygon

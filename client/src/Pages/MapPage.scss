@@ -2,10 +2,10 @@
 @include mixins.width-animation-mixin(shrink-side-bar, 25%, 0);
 
 .map-page-container {
+	@include mixins.full-screen-box;
 	width: 100%;
 	display: flex;
 	flex-direction: row;
-	height: var(--fullscreen-w-topbar);
 	background-color: var(--background-dark);
 	.fullscreen {
 		z-index: 10;

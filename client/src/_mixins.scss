@@ -13,6 +13,12 @@
 	align-content: center;
 }
 
+@mixin full-screen-box {
+	align-self: center;
+	height: var(--fullscreen-w-topbar);
+	box-sizing: border-box;
+	padding-bottom: 10px;
+}
 //----- Animations -----\\
 
 @mixin animation-mixin($name, $from, $to) {

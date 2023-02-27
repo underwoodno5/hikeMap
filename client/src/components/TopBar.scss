@@ -9,6 +9,7 @@
 	transition: height 2s ease-in;
 	overflow: hidden;
 	z-index: 1;
+	flex-shrink: 0;
 	&:hover,
 	&.full-menu {
 		z-index: 10;

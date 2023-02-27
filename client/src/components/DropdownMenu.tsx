@@ -1,5 +1,6 @@
 import React, { useRef, useEffect, useState } from "react";
 import "./DropdownMenu.scss";
+import { Me } from "../types/interface";
 
 function useOutsideAlerter(ref: any, setShowMenu: any, setClicked: any) {
 	useEffect(() => {
@@ -18,6 +19,7 @@ function useOutsideAlerter(ref: any, setShowMenu: any, setClicked: any) {
 export default function Menu(props: {
 	transition: Function;
 	setClicked: Function;
+	user: Me | null;
 }) {
 	const wrapperRef = useRef(null);
 	const [showMenu, setShowMenu] = useState<boolean>(false);
@@ -51,7 +53,7 @@ export default function Menu(props: {
 				</li>
 				<li>
 					<button className="light" onClick={() => props.transition("login")}>
-						Account
+						{props.user ? "Account" : "Login"}
 					</button>
 				</li>
 				<li>
