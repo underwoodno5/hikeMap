@@ -37,7 +37,6 @@ exports.User = {
 			.catch((err) => {
 				console.log(err);
 			});
-		console.log(res);
 		if (!res.errors) {
 			localStorage.setItem(
 				"myTrailList",
@@ -130,7 +129,6 @@ exports.User = {
 		if (res.data.error) {
 			return res.error;
 		} else {
-			console.log(res.data.getMyTrailList);
 			return res.data.getMyTrailList;
 		}
 	},

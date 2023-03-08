@@ -1,6 +1,7 @@
 @use "../mixins";
 .user-page-container {
 	@include mixins.full-screen-box;
+	width: 90%;
 	.user-block {
 		@include mixins.card;
 		display: flex;

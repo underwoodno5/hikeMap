@@ -57,6 +57,31 @@ export default function Map(props: MapProps) {
 		trailObject.trailPath
 	);
 
+	if (pinArray) {
+		var array = pinArray;
+		var bounds = {
+			latSmall: array[0][0],
+			latLarge: array[0][0],
+			lngSmall: array[0][1],
+			lngLarge: array[0][1],
+		};
+
+		array.forEach((x) => {
+			if (bounds.latSmall > x[0]) {
+				bounds.latSmall = x[0];
+			}
+			if (bounds.latLarge < x[0]) {
+				bounds.latLarge = x[0];
+			}
+			if (bounds.lngSmall > x[1]) {
+				bounds.lngSmall = x[1];
+			}
+			if (bounds.lngLarge < x[1]) {
+				bounds.lngLarge = x[1];
+			}
+		});
+	}
+
 	//-- Reset the popup to null when we change back and forth between customizing
 	if (customize === false && popupPosition !== null) {
 		setPopupPosition(null);
@@ -208,6 +233,23 @@ export default function Map(props: MapProps) {
 				map.invalidateSize();
 			}, 400);
 		}
+
+		// var x: any = null;
+
+		// map.eachLayer(function (layer) {
+		// 	if (layer instanceof L.TileLayer) {
+		// 		x = layer;
+		// 	}
+		// });
+		// if (x && x._tiles) {
+		// 	var z = x._tiles;
+		// 	var y = Object.keys(x._tiles);
+		// 	console.log(y.length);
+		// 	y.forEach((key) => {
+		// 		console.log(z[key].el.currentSrc);
+		// 	});
+		// }
+		// console.log(map.getZoom() + "zoom");
 
 		map.panTo(mapPositions.centre);
 		saveToLocalStorage();

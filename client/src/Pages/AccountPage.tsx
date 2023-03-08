@@ -17,8 +17,9 @@ export default function UserPage(props: { me: Me | null }) {
 	return (
 		<div className={"user-page-container"}>
 			<div className={"user-block"}>
-				{/* <h3>{me && me.name}</h3>
-				<button onClick={() => User.logout()}>logout</button> */}
+				<div className={"user-row"}></div>
+				<h3>{me?.name}</h3>
+				<button onClick={() => User.logout()}>logout</button>
 			</div>
 		</div>
 	);
