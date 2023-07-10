@@ -32,7 +32,7 @@ const User = mongoose.model("User", {
 	name: String,
 	password: String,
 	joinDate: String,
-	token: String,
+	refreshTokens: [String],
 	trailList: [{ type: Schema.Types.ObjectId, ref: Trail }],
 	userTrails: [{ type: Schema.Types.ObjectId, ref: UserTrail }],
 	admin: Boolean,
@@ -49,23 +49,26 @@ const BlockedToken = mongoose.model("BlockedToken", {
 //////---- Contents ----\\\\\\
 
 //------- User Stuff -------\\
-//- createUser
-//- login
-//-	deleteUser
-//-	me
+//- #createUser
+//- #login
+//-	#deleteUser
+//- #me
+//- #refresh
 
 //------- Trail Stuff -------\\
-//- Trail
-//- createTrail
-//- getAllTrails
+//- #Trail
+//- #createTrail
+//- #getAllTrails
 
 //----- User Trail Stuff -----\\
-//- addToTrailList
-//- getMyTrailList
-//- addToUserTrailPath
+//- #addToTrailList
+//- #getMyTrailList
+//- #addToUserTrailPath
 
 exports.roots = {
 	//------- User Stuff -------\\
+
+	//- #createUser
 
 	createUser: async ({ name, password }) => {
 		const userExists = await User.findOne({ name: name });
@@ -83,23 +86,47 @@ exports.roots = {
 		const joinDate = Date.now();
 		let hashedPassword = await bcrypt.hash(password, 12);
 
-		const user = new User({ name, password: hashedPassword, joinDate });
-		user.token = jwt.sign(
-			{ id: user._id, name: user.name, password: user.password },
-			process.env.JWT_SECRET
+		const user = new User({
+			name,
+			password: hashedPassword,
+			joinDate,
+			admin: false,
+		});
+		const refreshToken = jwt.sign(
+			{
+				exp: Math.floor(Date.now() / 1000) + 60 * 60 * 24,
+				name: user.name,
+			},
+			process.env.REFRESH_SECRET
 		);
+		const accessToken = jwt.sign(
+			{
+				exp: Math.floor(Date.now() / 1000) + 60 * 5,
+				id: user._id,
+				name: user.name,
+			},
+			process.env.REFRESH_SECRET
+		);
+
+		user.refreshTokens.push(refreshToken);
 
 		user.save();
 
 		return user;
 	},
 
+	//- #refresh
+
+	refresh: async ({ name, password }) => {},
+
+	//- #login
+
 	login: async ({ name, password }, context) => {
+		console.log("login attempt");
 		const user = await User.findOne({ name: name })
 			.populate("trailList")
 			.populate("userTrails");
 
-		console.log(user);
 		if (!user) {
 			throw new Error(
 				"Error: Either the user does not exist or password was incorrect"
@@ -107,30 +134,46 @@ exports.roots = {
 		} else {
 			const hash = user.password;
 			const passCheck = await bcrypt.compare(password, hash);
-			const jwtData = user.admin
-				? {
-						id: user._id,
-						name: user.name,
-						admin: true,
-				  }
-				: {
-						id: user._id,
-						name: user.name,
-				  };
 
 			if (passCheck == true) {
-				user.token = jwt.sign(
-					jwtData,
+				const accessToken = jwt.sign(
+					{
+						exp: Math.floor(Date.now() / 1000) + 60 * 5,
+						id: user._id,
+						name: user.name,
+						admin: user.admin,
+					},
 					user.admin ? process.env.JWT_ADMIN_SECRET : process.env.JWT_SECRET
 				);
+				const refreshToken = jwt.sign(
+					{
+						exp: Math.floor(Date.now() / 1000) + 60 * 60 * 24,
+						name: user.name,
+					},
+					process.env.REFRESH_SECRET
+				);
+
+				console.log(refreshToken);
+				user.refreshTokens.push(refreshToken);
+				if (user.refreshTokens.length > 2) {
+					user.refreshTokens.shift();
+				}
+
 				user.save();
-				context.res.cookie("token", user.token, {
+
+				context.res.cookie("refreshtoken", refreshToken, {
 					httpOnly: false,
 					SameSite: "None",
-					maxAge: 86400 * 1000,
+					maxAge: 24 * 60 * 60 * 1000,
 					// secure: true, SameSite:"Strict" //un-comment in production and change
 				});
-				return user;
+
+				const res = {
+					userTrailList: user.trailList,
+					userCustomTrails: user.userTrails,
+					accessToken: accessToken,
+				};
+				return res;
 			} else {
 				throw new Error(
 					"Error: Either the user does not exist or password was incorrect"
@@ -138,10 +181,15 @@ exports.roots = {
 			}
 		}
 	},
+
+	//-	#logout
 	logout: async ({}, context) => {
 		context.res.clearCookie("token");
 		return "You logged out";
 	},
+
+	//-	#deleteUser
+
 	deleteUser: async ({ name }) => {
 		const user = await User.findOne({ name: name });
 		const hash = user.password;
@@ -161,6 +209,8 @@ exports.roots = {
 			);
 		}
 	},
+
+	//- #me
 	me: async (_, context) => {
 		const user = context.req.user;
 		if (!user) {
@@ -168,6 +218,14 @@ exports.roots = {
 		} else {
 			return user;
 		}
+	},
+
+	//- refresh
+	refresh: async (_, context) => {
+		console.log("fired");
+		const refreshToken = jwt.sign("valid", process.env.REFRESH_SECRET);
+
+		return refreshToken;
 	},
 
 	adminCheck: async (name, password, context) => {

@@ -16,21 +16,34 @@ const response = (graphqlQuery) =>
 	});
 
 exports.User = {
+	//-- #login
 	login: async (username, password) => {
 		console.log(username);
 
 		let graphqlQuery = {
-			query: `mutation{login(name:"${username}" password:"${password}"){
-            name
-            token
-			trailList{
+			query: `mutation{login(name:"${username}" password:"${password}")
+		{	userTrailList{
 				name
 				_id
 				trailPath
 				startLat
 				startLong
+				distance
 			}
-        }}`,
+				userCustomTrails{
+					name
+					_id
+					trailPath
+					startLat
+					startLong
+					distance
+					waterPoints
+					tentPoints
+					createdby
+				}
+				accessToken
+			}}
+			`,
 		};
 		const res = await response(graphqlQuery)
 			.then((res) => res.json())
@@ -40,8 +53,13 @@ exports.User = {
 		if (!res.errors) {
 			localStorage.setItem(
 				"myTrailList",
-				JSON.stringify(res.data.login.trailList)
+				JSON.stringify(res.data.login.userTrailList)
 			);
+			localStorage.setItem(
+				"customTrailList",
+				JSON.stringify(res.data.login.userCustomTrails)
+			);
+			localStorage.setItem("accessToken", res.data.login.accessToken);
 		}
 
 		return res;
