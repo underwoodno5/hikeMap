@@ -115,14 +115,9 @@ exports.roots = {
 		return user;
 	},
 
-	//- #refresh
-
-	refresh: async ({ name, password }) => {},
-
 	//- #login
 
 	login: async ({ name, password }, context) => {
-		console.log("login attempt");
 		const user = await User.findOne({ name: name })
 			.populate("trailList")
 			.populate("userTrails");
@@ -153,16 +148,16 @@ exports.roots = {
 					process.env.REFRESH_SECRET
 				);
 
-				console.log(refreshToken);
+				//-- Adding refreshtoken to the list and removing the oldest
 				user.refreshTokens.push(refreshToken);
-				if (user.refreshTokens.length > 2) {
+				if (user.refreshTokens.length > 3) {
 					user.refreshTokens.shift();
 				}
 
-				user.save();
+				await user.save();
 
 				context.res.cookie("refreshtoken", refreshToken, {
-					httpOnly: false,
+					httpOnly: false, //--mark as true in production
 					SameSite: "None",
 					maxAge: 24 * 60 * 60 * 1000,
 					// secure: true, SameSite:"Strict" //un-comment in production and change
@@ -211,21 +206,86 @@ exports.roots = {
 	},
 
 	//- #me
-	me: async (_, context) => {
-		const user = context.req.user;
-		if (!user) {
-			throw new Error("Error: bad token");
-		} else {
+	me: async (args, context) => {
+		const { accessToken } = args;
+		const { refreshToken } = context.req;
+		if (!accessToken) {
+			return;
+		}
+		try {
+			let user = jwt.verify(accessToken, process.env.JWT_ADMIN_SECRET);
 			return user;
+		} catch {
+			//-- If access token fails pass it on to the refresh cycle through args and send the results back to the request
+			const refresh = await this.roots.refresh({ refreshToken, context });
+			return refresh;
 		}
 	},
 
-	//- refresh
-	refresh: async (_, context) => {
-		console.log("fired");
-		const refreshToken = jwt.sign("valid", process.env.REFRESH_SECRET);
+	//- #refresh
+	refresh: async (args, context) => {
+		//-- We need to grab the token from either args or context, depending on where the api was called from
+		const token = args?.refreshToken || context?.req.refreshToken;
+		const res = args?.context.res || context?.res;
+		if (!token) {
+			throw new Error("No token present - 401", 401);
+		} else {
+			//-- first we verify the JWT, then serve up a new access token to store client side
+			try {
+				const decodedToken = jwt.verify(token, process.env.REFRESH_SECRET);
+				const { name } = decodedToken;
+				const user = await User.findOne({ name });
 
-		return refreshToken;
+				//-- Checking to make sure the refresh token from the header is still greenlit on the database
+				const dbTokenIndex = user.refreshTokens.indexOf(token);
+				if (dbTokenIndex == -1) {
+					throw new Error("Bad token present - 401", 401);
+				} else {
+					const accessToken = jwt.sign(
+						{
+							exp: Math.floor(Date.now() / 1000) + 60 * 5, //- 5min
+							id: user._id,
+							name: user.name,
+							admin: user.admin,
+						},
+						user.admin ? process.env.JWT_ADMIN_SECRET : process.env.JWT_SECRET
+					);
+					const refreshToken = jwt.sign(
+						{
+							exp: Math.floor(Date.now() / 1000) + 60 * 60 * 24, //- 24hours
+							name: user.name,
+						},
+						process.env.REFRESH_SECRET
+					);
+					//-- Rewriting our refreshtoken and pruning it at 3 entries (ex: work, home, phone)
+
+					user.refreshTokens.push(refreshToken);
+					if (user.refreshTokens.length > 3) {
+						user.refreshTokens.shift();
+					}
+
+					await user.save();
+					const response = {
+						userTrailList: user.trailList,
+						userCustomTrails: user.userTrails,
+						name: user.name,
+						id: user.id,
+						accessToken: accessToken,
+					};
+
+					res.cookie("refreshtoken", refreshToken, {
+						httpOnly: false, //--mark as true in production
+						SameSite: "None",
+						maxAge: 24 * 60 * 60 * 1000,
+						// secure: true, SameSite:"Strict" //un-comment in production and change
+					});
+					return response;
+				}
+			} catch (error) {
+				console.log(error);
+				throw new Error("Error processing request", 101);
+			}
+		}
 	},
 
 	adminCheck: async (name, password, context) => {

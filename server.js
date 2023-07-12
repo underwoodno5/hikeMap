@@ -18,7 +18,7 @@ const auth = require("./config/middlewear").auth;
 dotenv.config();
 
 const typeDefs = types.typesDefs;
-const rootValue = resolves.roots;
+const resolvers = resolves.roots;
 const schema = buildSchema(typeDefs);
 
 let app = express();
@@ -37,12 +37,13 @@ var allowCrossDomain = function (req, res, next) {
 app.use(allowCrossDomain);
 app.use(cors(corsOptions));
 
+app.use(auth);
+
 app.use(
 	"/graphql",
-	auth,
 	graphqlHTTP((req, res) => ({
 		schema,
-		rootValue,
+		rootValue: resolvers,
 		graphiql: { headerEditorEnabled: true },
 		context: { req, res },
 	}))

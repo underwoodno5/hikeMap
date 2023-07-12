@@ -4,7 +4,7 @@
 
 exports.typesDefs = `
 type Query{
-	me: User
+	me(accessToken:String): User
 	Trail(name:String): Trail
 	test: String
 	getMyTrailList: UserTrailList
@@ -15,7 +15,7 @@ type Query{
 type Mutation{
 	createUser(name:String, password: String):User
 	login(name: String, password:String): Login
-	refresh: String
+	refresh: Login
 	logout: String
 	createTrail(name: String, trailPath:[[Float]]): Trail
 	addToTrailList(trails: [TrailInput]): String
@@ -33,6 +33,7 @@ type User{
 	trailList: [Trail]
 	userTrails: [UserTrail]
 	admin: Boolean
+	accessToken: String
 }
 
 type UserPath{

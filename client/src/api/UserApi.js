@@ -64,6 +64,8 @@ exports.User = {
 
 		return res;
 	},
+	//-- #logout
+
 	logout: async (username, password) => {
 		let graphqlQuery = {
 			query: `mutation{ 
@@ -82,9 +84,11 @@ exports.User = {
 		window.location.reload();
 		return res;
 	},
+	//-- #me
+
 	me: async () => {
 		let graphqlQuery = {
-			query: `query{ me {
+			query: `query{ me(accessToken:"ndksanjkdsa") {
 				id
 				name
 				trailList{
