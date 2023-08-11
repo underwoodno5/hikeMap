@@ -4,7 +4,7 @@
 
 exports.typesDefs = `
 type Query{
-	me(accessToken:String): User
+	me: User
 	Trail(name:String): Trail
 	test: String
 	getMyTrailList: UserTrailList

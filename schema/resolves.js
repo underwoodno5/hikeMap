@@ -1,46 +1,7 @@
 const mongoose = require("mongoose");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
-const { response } = require("express");
-const { Schema } = mongoose;
-
-//------------------
-//------- Models
-//------------------
-const Trail = mongoose.model("Trail", {
-	name: String,
-	startLat: Number,
-	startLong: Number,
-	trailPath: [[Number]],
-	distance: Number,
-	tentPoints: [[Number]],
-	waterPoints: [[Number]],
-});
-
-const UserTrail = mongoose.model("UserTrail", {
-	createdby: Schema.Types.ObjectId,
-	name: String,
-	startLat: Number,
-	startLong: Number,
-	trailPath: [[Number]],
-	distance: Number,
-	tentPoints: [[Number]],
-	waterPoints: [[Number]],
-});
-
-const User = mongoose.model("User", {
-	name: String,
-	password: String,
-	joinDate: String,
-	refreshTokens: [String],
-	trailList: [{ type: Schema.Types.ObjectId, ref: Trail }],
-	userTrails: [{ type: Schema.Types.ObjectId, ref: UserTrail }],
-	admin: Boolean,
-});
-
-const BlockedToken = mongoose.model("BlockedToken", {
-	token: String,
-});
+const { Trail, UserTrail, User, BlockedToken } = require("../schema/models");
 
 //------------------
 //------- Resolves
@@ -129,6 +90,7 @@ exports.roots = {
 		} else {
 			const hash = user.password;
 			const passCheck = await bcrypt.compare(password, hash);
+			console.log(user.admin);
 
 			if (passCheck == true) {
 				const accessToken = jwt.sign(
@@ -207,19 +169,29 @@ exports.roots = {
 
 	//- #me
 	me: async (args, context) => {
-		const { accessToken } = args;
-		const { refreshToken } = context.req;
-		if (!accessToken) {
-			return;
-		}
-		try {
-			let user = jwt.verify(accessToken, process.env.JWT_ADMIN_SECRET);
+		if (!context.req.user) {
+			throw new Error("Error, bad token");
+		} else {
+			console.log(context.req.user.admin);
+			const user = {
+				name: context.req.user.name,
+				id: context.req.user.id,
+				admin: context.req.user.admin,
+				accessToken: context.req.accessToken,
+			};
 			return user;
-		} catch {
-			//-- If access token fails pass it on to the refresh cycle through args and send the results back to the request
-			const refresh = await this.roots.refresh({ refreshToken, context });
-			return refresh;
 		}
+		// if (!accessToken) {
+		// 	return;
+		// }
+		// try {
+		// 	let user = jwt.verify(accessToken, process.env.JWT_ADMIN_SECRET);
+		// 	return user;
+		// } catch {
+		// 	//-- If access token fails pass it on to the refresh cycle through args and send the results back to the request
+		// 	const refresh = await this.roots.refresh({ refreshToken, context });
+		// 	return refresh;
+		// }
 	},
 
 	//- #refresh
@@ -408,11 +380,9 @@ exports.roots = {
 		return `${addedArray.toString()} added to your list.`;
 	},
 
-	getMyTrailList: async ({}, context) => {
-		if (!context.req.isAuth || !context.req.user) {
-			throw new Error(
-				"Not authorized, please login to add a new trail to the database"
-			);
+	getMyTrailList: async (args, context) => {
+		if (!context.req.authorized || !context.req.user) {
+			throw new Error("Please login to get your trail list");
 		}
 		const userId = context.req.user.id;
 

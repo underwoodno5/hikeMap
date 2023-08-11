@@ -46,21 +46,28 @@ function App() {
 	//-- the api will store the info in localstorage
 
 	const fetchData = async () => {
-		const response = await Promise.all([User.me(), Trails.getAll()]);
+		//--Initial api call passes possible new access token to future, concurrent api calls.
+		const me = await User.me();
+		let newAccessToken = me.accessToken || null;
+
+		const trails = await Promise.all([
+			Trails.getAll(newAccessToken),
+			User.getUserTrails(newAccessToken),
+		]);
+
 		setAppData({
-			user: response[0].me,
-			allTrails: response[1],
-			userTrails: response[0].userTrailList,
-			userCustomTrails: response[0].customTrailList,
+			user: me.me,
+			allTrails: trails[0],
+			userTrails: null,
+			userCustomTrails: null,
 		});
+
 		setLoading(false);
 	};
 
 	if (online && loading && appData.allTrails === null) {
 		fetchData().catch((err) => console.log(err));
 	}
-
-	console.log("render");
 
 	//-- This global errorfunction gets passed as a prop to any object that will throw errors, place error text in function.
 	const errorFunction = (x: string) => {

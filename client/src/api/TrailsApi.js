@@ -2,20 +2,27 @@
 const endpoint = "http://192.168.2.14:5000/graphql";
 const headers = {
 	"content-type": "application/json",
+	accesstoken: localStorage.getItem("accessToken"),
 };
 
 //-- Here we have all API from the frontend that deal with Trail data on the server.
 
-const response = (graphqlQuery) =>
+//--In our response we have a newAccessToken, to stop concurrent API calls from jamming up the token refresh cycle we send an
+// initial api call, await a response, then if a new token is received all concurrent api calls after use the new token.
+
+const response = (graphqlQuery, newAccessToken) =>
 	fetch(endpoint, {
 		method: "POST",
-		headers: headers,
+		headers: {
+			"content-type": "application/json",
+			accesstoken: newAccessToken || localStorage.getItem("accessToken"),
+		},
 		body: JSON.stringify(graphqlQuery),
 		credentials: "include",
 	});
 
 exports.Trails = {
-	getOne: async (trailName) => {
+	getOne: async (trailName, newAccessToken) => {
 		let graphqlQuery = {
 			query: `query{Trail(name:"${trailName}"){
            name
@@ -24,26 +31,28 @@ exports.Trails = {
            startLong
         }}`,
 		};
-		let res = await response(graphqlQuery)
+		let res = await response(graphqlQuery, newAccessToken)
 			.then((res) => res.json())
 			.catch((err) => {
 				console.log(err);
 			});
 		return res.data.Trail;
 	},
-	getAll: async () => {
+	getAll: async (newAccessToken) => {
 		let graphqlQuery = {
 			query: `query{getAllTrails{name startLat startLong _id trailPath distance}}`,
 		};
-		let res = await response(graphqlQuery)
+		let res = await response(graphqlQuery, newAccessToken)
 			.then((res) => res.json())
 			.catch((err) => {
 				console.log(err);
 			});
 
+		localStorage.setItem("allTrails", JSON.stringify(res.data.getAllTrails));
+
 		return res.data.getAllTrails;
 	},
-	addToTrailList: async (trails) => {
+	addToTrailList: async (trails, newAccessToken) => {
 		let query = `mutation AddToTrailList($trails: [TrailInput]) {
 			addToTrailList(trails: $trails) 
 		  }`;
@@ -53,7 +62,7 @@ exports.Trails = {
 				trails: trails,
 			},
 		};
-		let res = await response(graphqlQuery)
+		let res = await response(graphqlQuery, newAccessToken)
 			.then((res) => res.json())
 			.catch((err) => {
 				return err;
