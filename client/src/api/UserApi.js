@@ -98,18 +98,19 @@ exports.User = {
 		};
 		const res = await response(graphqlQuery).then((res) => res.json());
 
+		//-- If error (no tokens) skip logic and pass down the line
 		if (res.errors) {
-			console.log(res.errors);
-			return res.errors;
+			return res;
 		}
 
 		const newAccessToken = res.data.me.accessToken || null;
 
-		//--if user logs in ok we grab their trail data and return as one item, otherwise return null
+		//--if user logs in we grab their trail data and return as one item, otherwise return null
 		const myData = {
 			me: res.data.me,
 			accessToken: newAccessToken,
 		};
+
 		localStorage.setItem(
 			"me",
 			JSON.stringify({ name: myData.me.name, admin: myData.me.admin })

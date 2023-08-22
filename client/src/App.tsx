@@ -46,20 +46,21 @@ function App() {
 	//-- the api will store the info in localstorage
 
 	const fetchData = async () => {
-		//--Initial api call passes possible new access token to future, concurrent api calls.
+		//--Initial api call passes possible new access token to future, concurrent api calls. If there's an error checking the
+		// "me", user trail data is skipped.
 		const me = await User.me();
 		let newAccessToken = me.accessToken || null;
+		let fetch = me.errors
+			? [Trails.getAll(newAccessToken)]
+			: [Trails.getAll(newAccessToken), User.getUserTrails(newAccessToken)];
 
-		const trails = await Promise.all([
-			Trails.getAll(newAccessToken),
-			User.getUserTrails(newAccessToken),
-		]);
+		const trails = await Promise.all(fetch);
 
 		setAppData({
 			user: me.me,
 			allTrails: trails[0],
-			userTrails: null,
-			userCustomTrails: null,
+			userTrails: trails[1]?.userTrailList,
+			userCustomTrails: trails[1]?.userCustomTrails,
 		});
 
 		setLoading(false);

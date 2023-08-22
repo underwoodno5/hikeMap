@@ -32,6 +32,7 @@ export default function MicroTrailList(props: {
 	}, [isExpanded]);
 
 	const clickTrail = (trailObject: Trail, i: number) => {
+		console.log("click trail");
 		if (i === isExpanded && displayedTrails.displayed === true) {
 			setIsExpanded(-1);
 		} else {
@@ -42,8 +43,11 @@ export default function MicroTrailList(props: {
 	};
 
 	const sideBarClick = (e: React.MouseEvent) => {
-		e.bubbles = false;
+		e.stopPropagation();
 		swapSideBar();
+	};
+	const shareTrail = (e: React.MouseEvent) => {
+		e.stopPropagation();
 	};
 
 	const headerClick = (x: any) => {
@@ -99,9 +103,14 @@ export default function MicroTrailList(props: {
 								user && (
 									<div className="trail-list-expansion">
 										{user && (
-											<button onClick={(e) => sideBarClick(e)}>
-												Edit Trail
-											</button>
+											<>
+												<button onClick={(e) => sideBarClick(e)}>
+													Edit Trail
+												</button>
+												<button onClick={(e) => shareTrail(e)}>
+													<i className="las la-share-square"></i>
+												</button>
+											</>
 										)}
 										<button className="mobile" onClick={() => mobileHide()}>
 											View Map

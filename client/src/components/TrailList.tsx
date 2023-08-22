@@ -31,6 +31,7 @@ export default function TrailList(props: TrailListProps) {
 	// the trailist button, where they are saved to the users db.
 
 	const handleChange = (e: any) => {
+		console.log("change");
 		const trailIndex = parseInt(e.target.value);
 		setChecked(
 			checked.map((c, i) => {
@@ -69,82 +70,88 @@ export default function TrailList(props: TrailListProps) {
 	};
 
 	const trailClick = (x: any) => {
+		console.log(x);
 		setDisplayedTrails(x);
 	};
 
 	trailMatch();
 
 	return (
-		<div className="trail-list-container">
-			<div className="list-tab">
-				<h4
-					className={`header ${
-						displayedTrails === allTrails ? "selected" : null
-					}`}
-					onClick={() => trailClick(allTrails)}
-				>
-					Trail List
-				</h4>
-				{props.me && (
-					<>
-						<h4
-							className={`header ${
-								displayedTrails === userTrails ? "selected" : null
-							}`}
-							onClick={() => trailClick(userTrails)}
-						>
-							User List
-						</h4>
-						<h4
-							className={`header ${
-								displayedTrails === userCustomTrails ? "selected" : null
-							}`}
-							onClick={() => trailClick(userCustomTrails)}
-						>
-							Custom List
-						</h4>
-					</>
-				)}
-			</div>
-			<ul>
-				{displayedTrails.map((trailObject, i) => {
-					return (
-						<li
-							className={matchArray[i]}
-							key={i}
-							onClick={() =>
-								navigate("/map", {
-									state: { clickedIndex: i, displayedTrails: displayedTrails },
-								})
-							}
-						>
-							<h5>{trailObject.name}</h5>
-							<h5>{`Distance: ${
-								Math.round(trailObject.distance / 10) / 100
-							}km`}</h5>
-							<h5>{`${trailObject.startLong}`}</h5>
-							{me && (
-								<input
-									type="checkbox"
-									id="trail"
-									name={trailObject.name}
-									value={i}
-									onChange={(e) => handleChange(e)}
-									onClick={(e) => {
-										e.stopPropagation();
-									}}
-									checked={checked[i]}
-								/>
-							)}
-						</li>
-					);
-				})}
-			</ul>
-			{me && (
+		<div className="trail-list-container halftone">
+			<div className="inner-border">
+				<div className="list-tab">
+					<h3
+						className={`header trail-header ${
+							displayedTrails === allTrails ? "selected" : null
+						}`}
+						onClick={() => trailClick(allTrails)}
+					>
+						Trail List
+					</h3>
+					{props.me && (
+						<>
+							<h3
+								className={`header trail-header ${
+									displayedTrails === userTrails ? "selected" : null
+								}`}
+								onClick={() => trailClick(userTrails)}
+							>
+								User List
+							</h3>
+							<h3
+								className={`header trail-header ${
+									displayedTrails === userCustomTrails ? "selected" : null
+								}`}
+								onClick={() => trailClick(userCustomTrails)}
+							>
+								Custom List
+							</h3>
+						</>
+					)}
+				</div>
+				<ul>
+					{displayedTrails.map((trailObject, i) => {
+						return (
+							<li
+								className={matchArray[i]}
+								key={i}
+								onClick={() =>
+									navigate("/map", {
+										state: {
+											clickedIndex: i,
+											displayedTrails: displayedTrails,
+										},
+									})
+								}
+							>
+								<h5>{trailObject.name}</h5>
+								<h5>{`Distance: ${
+									Math.round(trailObject.distance / 10) / 100
+								}km`}</h5>
+								<h5>{`${trailObject.startLong}`}</h5>
+								{me && (
+									<input
+										type="checkbox"
+										id="trail"
+										name={trailObject.name}
+										value={i}
+										onChange={(e) => handleChange(e)}
+										onClick={(e) => {
+											e.stopPropagation();
+										}}
+										checked={checked[i]}
+									/>
+								)}
+							</li>
+						);
+					})}
+				</ul>
+				{/* {me && (
 				<button className="light" onClick={addTrailToList}>
 					Add to my trails
 				</button>
-			)}
+			)} */}
+			</div>
 		</div>
 	);
 }

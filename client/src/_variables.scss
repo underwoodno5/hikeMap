@@ -1,5 +1,6 @@
 :root {
-	--background-dark: #363b3a;
+	// --background-dark: #363b3a;
+	--background-dark: #7cacea;
 	--background-light: #dadad9;
 
 	--font-light: #f2f1ef;
@@ -8,10 +9,14 @@
 	--warn-color: #f5cb5c;
 	--red-accent: #89023e;
 	--blue-accent: #778da9;
+	--yellow: #faf01c;
 	--button-light: rgba(218, 218, 217, 0.1);
 	--button-dark: rgba(54, 59, 58, 0.1);
 
-	--card-background: #778da9;
+	--shadow-blue: #35619d;
+
+	// --card-background: #778da9;
+	--card-background: linear-gradient(0.2turn, #fef307 50%, #fe87b4 50%);
 	--card-background-hover: rgba(218, 218, 217, 0.2);
 
 	--hover-light: rgba(218, 218, 217, 0.2);

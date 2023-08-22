@@ -90,7 +90,6 @@ exports.roots = {
 		} else {
 			const hash = user.password;
 			const passCheck = await bcrypt.compare(password, hash);
-			console.log(user.admin);
 
 			if (passCheck == true) {
 				const accessToken = jwt.sign(
@@ -172,7 +171,6 @@ exports.roots = {
 		if (!context.req.user) {
 			throw new Error("Error, bad token");
 		} else {
-			console.log(context.req.user.admin);
 			const user = {
 				name: context.req.user.name,
 				id: context.req.user.id,

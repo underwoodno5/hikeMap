@@ -5,62 +5,96 @@
 	margin: 0;
 	max-height: calc(var(--vh) - 125px);
 	width: 90%;
-	align-self: center;
-	background-color: var(--card-background);
-	flex-direction: column;
+	background-image: var(--card-background);
 	display: flex;
-	align-items: center;
-	padding-bottom: 10px;
+	padding: 20px;
+	box-sizing: border-box;
+	position: relative;
 
-	.list-tab {
+	&:after {
+		background-image: radial-gradient(
+			circle at center,
+			black 0.14rem,
+			transparent 0
+		);
+		background-size: 1.3rem 1.3rem;
+		background-repeat: round;
+		height: 100%;
 		width: 100%;
+		content: "";
+		position: absolute;
+		top: 0px;
+		left: 0px;
+		opacity: 0.09;
+		z-index: 0;
+	}
+
+	.inner-border {
+		width: 100%;
+		height: 100%;
+		flex-direction: column;
 		display: flex;
-	}
+		align-items: center;
+		align-self: center;
+		border: 2px solid black;
+		z-index: 1;
 
-	h5 {
-		flex: 1 1 0px;
-		text-align: left;
-	}
-	.header {
-		padding: 5px;
-		transition: background-color 0.5s ease;
-	}
-	.selected {
-		background-color: var(--card-background-hover);
-		border-radius: 8px;
-	}
-	ul {
-		list-style-type: none;
-		width: 95%;
-		overflow: scroll;
-		justify-content: flex-start;
-
-		li {
+		.list-tab {
+			width: 100%;
 			display: flex;
-			justify-content: space-between;
-			align-items: center;
-			transition: background-color 0.25s ease-in;
-			width: calc(94% - 25px);
-			z-index: 1;
-			&.match {
-				background-color: var(--card-background);
+		}
+
+		h5 {
+			flex: 1 1 0px;
+			text-align: left;
+			margin: 5px 10px;
+		}
+		.header {
+			padding: 5px;
+			transition: background-color 0.5s ease;
+		}
+		.selected {
+			background-color: var(--card-background-hover);
+			border-radius: 8px;
+		}
+		ul {
+			list-style-type: none;
+			width: 95%;
+			overflow: scroll;
+			justify-content: flex-start;
+
+			li {
+				display: flex;
+				justify-content: space-between;
+				align-items: center;
+				background-color: var(--yellow);
+				transition: background-color 0.25s ease-in;
+				width: calc(94% - 25px);
+				z-index: 1;
+				border: 2px solid black;
+				margin: 22px 0;
+				box-shadow: 20px 10px var(--shadow-blue);
+				color: var(--font-dark);
+				&.match {
+					background-color: blue;
+					&:hover {
+						background-color: var(--card-background-hover);
+					}
+				}
 				&:hover {
 					background-color: var(--card-background-hover);
+					cursor: pointer;
 				}
-			}
-			&:hover {
-				background-color: var(--card-background-hover);
-				cursor: pointer;
-			}
-			h4 {
-				width: 30%;
-				text-align: left;
-			}
-			.input-container {
-				z-index: 10000;
-				width: 200px;
-				height: 50px;
-				background: red;
+				h4 {
+					width: 30%;
+					text-align: left;
+				}
+				.input-container {
+					z-index: 10000;
+					width: 200px;
+					height: 50px;
+					background: red;
+				}
 			}
 		}
 	}
